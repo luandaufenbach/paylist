@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
-import { useEffect, useState, use } from 'react'
-import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
-import PlayerList from '@/components/PlayerList'
-import AddPlayerForm from '@/components/AddPlayerForm'
+import { useEffect, useState, use } from "react";
+import Link from "next/link";
+import { supabase } from "@/lib/supabase";
+import PlayerList from "@/components/PlayerList";
+import AddPlayerForm from "@/components/AddPlayerForm";
 
 /**
  * Página Pública do Evento
@@ -14,16 +14,16 @@ import AddPlayerForm from '@/components/AddPlayerForm'
  */
 export default function EventPage({ params: paramsPromise }) {
   // Desembrulhar a Promise de params
-  const params = use(paramsPromise)
+  const params = use(paramsPromise);
   // Estado: guardar dados do evento
-  const [event, setEvent] = useState(null)
+  const [event, setEvent] = useState(null);
 
   // Estado: guardar ID do jogador atual (se existir)
-  const [currentPlayerId, setCurrentPlayerId] = useState(null)
+  const [currentPlayerId, setCurrentPlayerId] = useState(null);
 
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [error, setError] = useState(null)
+  const [error, setError] = useState(null);
 
   /**
    * Função: Buscar dados do evento
@@ -31,26 +31,26 @@ export default function EventPage({ params: paramsPromise }) {
    */
   const fetchEvent = async (eventId) => {
     try {
-      setError(null)
+      setError(null);
 
       const { data, error: fetchError } = await supabase
-        .from('event')
-        .select('*')
-        .eq('id', eventId)
-        .single()
+        .from("event")
+        .select("*")
+        .eq("id", eventId)
+        .single();
 
       if (fetchError) {
-        throw new Error('Evento não encontrado')
+        throw new Error("Evento não encontrado");
       }
 
-      setEvent(data)
+      setEvent(data);
     } catch (err) {
-      setError(err.message)
-      console.error('Erro ao buscar evento:', err)
+      setError(err.message);
+      console.error("Erro ao buscar evento:", err);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   /**
    * Hook: useEffect
@@ -59,150 +59,345 @@ export default function EventPage({ params: paramsPromise }) {
    */
   useEffect(() => {
     if (params.id) {
-      fetchEvent(params.id)
+      fetchEvent(params.id);
     }
-  }, [params.id])
+  }, [params.id]);
 
   /**
    * Função: Formatar data para formato legível
    * Ex: 2024-03-28 → 28/03/2024
    */
   const formatDate = (dateString) => {
-    if (!dateString) return 'Data não informada'
+    if (!dateString) return "Data não informada";
 
-    const date = new Date(dateString)
-    return date.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    })
-  }
+    const date = new Date(dateString);
+    return date.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
 
   /**
    * Função: Formatar valor em moeda brasileira
    * Ex: 15 → R$ 15,00
    */
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(price)
-  }
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(price);
+  };
 
   /**
    * Função: Callback quando um participante é adicionado
    * Chamado por AddPlayerForm após sucesso
    */
   const handleParticipantAdded = (participant) => {
-    console.log('Participante adicionado:', participant)
-  }
+    console.log("Participante adicionado:", participant);
+  };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600 mb-2">Carregando evento...</p>
-          <div className="inline-block h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      <div
+        style={{
+          minHeight: "100vh",
+          background: "#fff",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <div
+            style={{
+              display: "inline-block",
+              height: "32px",
+              width: "32px",
+              border: "4px solid #111",
+              borderTopColor: "transparent",
+              borderRadius: "50%",
+              animation: "spin 1s linear infinite",
+            }}
+          ></div>
         </div>
       </div>
-    )
+    );
   }
 
   if (error || !event) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
-          <div className="text-4xl mb-4">⚠️</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Evento não encontrado</h1>
-          <p className="text-gray-600 mb-6">{error || 'Evento não existe'}</p>
+      <div
+        style={{
+          minHeight: "100vh",
+          background: "#fff",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "24px",
+        }}
+      >
+        <div style={{ textAlign: "center", maxWidth: "400px" }}>
+          <h1
+            style={{
+              fontSize: "24px",
+              fontWeight: 600,
+              color: "#111",
+              marginBottom: "8px",
+            }}
+          >
+            Evento não encontrado
+          </h1>
+          <p style={{ color: "#6b7280", marginBottom: "24px" }}>
+            {error || "Este evento não existe."}
+          </p>
           <Link
             href="/"
-            className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg transition-colors"
+            style={{
+              color: "#0066ff",
+              textDecoration: "none",
+              fontWeight: 600,
+            }}
           >
-            Voltar ao início
+            ← Voltar
           </Link>
         </div>
       </div>
-    )
+    );
   }
 
   // Renderizar página do evento
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Cabeçalho do evento */}
-        <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-          {/* Título */}
-          <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center gap-2">
-            🎉 {event?.title || 'Evento'}
-          </h1>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#fff",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <main
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          padding: "32px 24px",
+        }}
+      >
+        <div style={{ width: "100%", maxWidth: "600px" }}>
+          {/* Título do Evento */}
+          <div style={{ textAlign: "center", marginBottom: "32px" }}>
+            <h1 style={{ fontSize: "24px", fontWeight: 700, color: "#111" }}>
+               {event?.title || "Evento"}
+            </h1>
+          </div>
 
-          {/* Grid de informações */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            {/* Local */}
-            <div className="flex items-start gap-3">
-              <span className="text-2xl">📍</span>
-              <div>
-                <p className="text-sm text-gray-500 font-medium">Local</p>
-                <p className="text-gray-900 font-semibold">
-                  {event?.location || 'Local não informado'}
-                </p>
+          {/* Informações do Evento */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "16px",
+              marginBottom: "32px",
+            }}
+          >
+            {event?.location && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  paddingBottom: "12px",
+                  borderBottom: "1px solid #e5e7eb",
+                }}
+              >
+                <span style={{ fontSize: "18px" }}>📍</span>
+                <div>
+                  <p
+                    style={{
+                      fontSize: "12px",
+                      color: "#6b7280",
+                      margin: "0",
+                      fontWeight: 500,
+                    }}
+                  >
+                    Local
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "14px",
+                      color: "#111",
+                      margin: "0",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {event.location}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Data */}
-            <div className="flex items-start gap-3">
-              <span className="text-2xl">📅</span>
-              <div>
-                <p className="text-sm text-gray-500 font-medium">Data</p>
-                <p className="text-gray-900 font-semibold">
-                  {formatDate(event?.date)}
-                </p>
+            {event?.date && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  paddingBottom: "12px",
+                  borderBottom: "1px solid #e5e7eb",
+                }}
+              >
+                <span style={{ fontSize: "18px" }}></span>
+                <div>
+                  <p
+                    style={{
+                      fontSize: "12px",
+                      color: "#6b7280",
+                      margin: "0",
+                      fontWeight: 500,
+                    }}
+                  >
+                    Horário
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "14px",
+                      color: "#111",
+                      margin: "0",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {formatDate(event.date)}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Valor */}
-            <div className="flex items-start gap-3">
-              <span className="text-2xl">💰</span>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                paddingBottom: "12px",
+                borderBottom: "1px solid #e5e7eb",
+              }}
+            >
+              <span style={{ fontSize: "18px" }}></span>
               <div>
-                <p className="text-sm text-gray-500 font-medium">Valor por pessoa</p>
-                <p className="text-gray-900 font-semibold">
+                <p
+                  style={{
+                    fontSize: "12px",
+                    color: "#6b7280",
+                    margin: "0",
+                    fontWeight: 500,
+                  }}
+                >
+                  Valor
+                </p>
+                <p
+                  style={{
+                    fontSize: "14px",
+                    color: "#111",
+                    margin: "0",
+                    fontWeight: 500,
+                  }}
+                >
                   {formatPrice(event?.price)}
                 </p>
               </div>
             </div>
+          </div>
 
-            {/* Limite de participantes */}
-            <div className="flex items-start gap-3">
-              <span className="text-2xl">👥</span>
-              <div>
-                <p className="text-sm text-gray-500 font-medium">Limite de participantes</p>
-                <p className="text-gray-900 font-semibold">
-                  Até {event?.max_players} pessoas
-                </p>
-              </div>
+          {/* Divisor */}
+          <div
+            style={{ height: "1px", background: "#e5e7eb", margin: "32px 0" }}
+          ></div>
+
+          {/* Lista de Jogadores */}
+          <div style={{ marginBottom: "32px" }}>
+            <PlayerList
+              eventId={event?.id}
+              maxParticipants={event?.max_players}
+            />
+          </div>
+
+          {/* Divisor */}
+          <div
+            style={{ height: "1px", background: "#e5e7eb", margin: "32px 0" }}
+          ></div>
+
+          {/* Entrar na Lista */}
+          <div style={{ marginBottom: "32px" }}>
+            <h3
+              style={{
+                fontSize: "12px",
+                fontWeight: 600,
+                color: "#111",
+                textTransform: "uppercase",
+                marginBottom: "24px",
+                letterSpacing: "0.5px",
+              }}
+            >
+              Entrar na lista
+            </h3>
+            <AddPlayerForm
+              eventId={event?.id}
+              onPlayerAdded={handleParticipantAdded}
+            />
+          </div>
+
+          {/* Divisor */}
+          <div
+            style={{ height: "1px", background: "#e5e7eb", margin: "32px 0" }}
+          ></div>
+
+          {/* Comprovante PIX */}
+          <div style={{ textAlign: "center" }}>
+            <h3
+              style={{
+                fontSize: "12px",
+                fontWeight: 600,
+                color: "#111",
+                textTransform: "uppercase",
+                marginBottom: "24px",
+                letterSpacing: "0.5px",
+              }}
+            >
+              Comprovante PIX
+            </h3>
+            <div
+              style={{
+                border: "2px dashed #e5e7eb",
+                borderRadius: "8px",
+                padding: "40px 24px",
+                textAlign: "center",
+              }}
+            >
+              <div style={{ fontSize: "32px", marginBottom: "12px" }}></div>
+              <p
+                style={{
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  color: "#111",
+                  marginBottom: "4px",
+                }}
+              >
+                Selecionar comprovante
+              </p>
+              <p style={{ fontSize: "12px", color: "#6b7280" }}>
+                (PNG, JPG ou PDF)
+              </p>
             </div>
           </div>
         </div>
+      </main>
 
-        {/* Seção: Lista de participantes */}
-        <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-          <PlayerList eventId={event?.id} maxParticipants={event?.max_players} />
-        </div>
-
-        {/* Seção: Formulário para entrar na lista */}
-        <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Entrar na Lista</h2>
-          <AddPlayerForm eventId={event?.id} onPlayerAdded={handleParticipantAdded} />
-        </div>
-
-        {/* Instrução final */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-          <p className="text-blue-900">
-             Após entrar, você receberá instruções para enviar o comprovante PIX
-          </p>
-        </div>
-      </div>
+      <style>{`
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
-  )
+  );
 }
