@@ -92,7 +92,7 @@ export default function Home() {
       >
         {/* Criar Evento */}
         <Link
-          href="/login"
+          href="auth/login"
           style={{
             width: "100%",
             padding: "14px 24px",
@@ -179,9 +179,27 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <p style={{ fontSize: "13px", color: "#999", textAlign: "center" }}>
-        Peladas, churrascos, festas — qualquer evento.
-      </p>
+      <div style={{ textAlign: "center" }}>
+        <p style={{ fontSize: "13px", color: "#999", marginBottom: "12px" }}>
+          Peladas, churrascos, festas — qualquer evento.
+        </p>
+        <p style={{ fontSize: "13px", color: "#666" }}>
+          Já possui uma conta?{" "}
+          <Link
+            href="/auth/login"
+            style={{
+              color: "#0066ff",
+              textDecoration: "none",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+            onMouseOver={(e) => (e.target.style.textDecoration = "underline")}
+            onMouseOut={(e) => (e.target.style.textDecoration = "none")}
+          >
+            Entrar
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

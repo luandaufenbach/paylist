@@ -189,7 +189,7 @@ export default function EventPage({ params: paramsPromise }) {
           {/* Título do Evento */}
           <div style={{ textAlign: "center", marginBottom: "32px" }}>
             <h1 style={{ fontSize: "24px", fontWeight: 700, color: "#111" }}>
-               {event?.title || "Evento"}
+              {event?.title || "Evento"}
             </h1>
           </div>
 
@@ -212,7 +212,7 @@ export default function EventPage({ params: paramsPromise }) {
                   borderBottom: "1px solid #e5e7eb",
                 }}
               >
-                <span style={{ fontSize: "18px" }}>📍</span>
+                <span style={{ fontSize: "18px" }}></span>
                 <div>
                   <p
                     style={{
@@ -258,7 +258,7 @@ export default function EventPage({ params: paramsPromise }) {
                       fontWeight: 500,
                     }}
                   >
-                    Horário
+                    Data
                   </p>
                   <p
                     style={{
@@ -307,7 +307,44 @@ export default function EventPage({ params: paramsPromise }) {
                 </p>
               </div>
             </div>
+
+            {event?.time && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  paddingBottom: "12px",
+                  borderBottom: "1px solid #e5e7eb",
+                }}
+              >
+                <span style={{ fontSize: "18px" }}></span>
+                <div>
+                  <p
+                    style={{
+                      fontSize: "12px",
+                      color: "#6b7280",
+                      margin: "0",
+                      fontWeight: 500,
+                    }}
+                  >
+                    Horário
+                  </p>
+                  <p
+                    style={{
+                      fontSize: "14px",
+                      color: "#111",
+                      margin: "0",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {event.time}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
+
 
           {/* Divisor */}
           <div
