@@ -1,8 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'  
+import { useRouter } from 'next/navigation' 
 
 export default function AdminPage() {
+    const router = useRouter()  // ← ADICIONE isto
+
+    // Proteção de autenticação
+    useEffect(() => {
+        const token = localStorage.getItem('auth_token')
+
+        if (!token) {
+            // Sem token → redirect para login
+            router.push('/auth/login')
+            return
+        }
+    }, [router])
     const [eventId, setEventId] = useState('')
     const [players, setPlayers] = useState([])
     const [isLoading, setIsLoading] = useState(false)
@@ -233,8 +246,8 @@ export default function AdminPage() {
                                             <button
                                                 onClick={() => togglePaid(player)}
                                                 className={`px-2 py-1 rounded text-xs ${player.paid
-                                                        ? 'bg-emerald-100 text-emerald-700'
-                                                        : 'bg-gray-100 text-gray-700'
+                                                    ? 'bg-emerald-100 text-emerald-700'
+                                                    : 'bg-gray-100 text-gray-700'
                                                     }`}
                                             >
                                                 {player.paid ? 'Sim' : 'Não'}

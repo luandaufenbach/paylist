@@ -52,6 +52,33 @@ export default function Page() {
         router.push('/auth/login')
     }
 
+    const handleDelete = async (eventId, e) => {
+        e.stopPropagation()
+
+        if (!confirm('Tem certeza que deseja deletar este evento?')) {
+            return
+        }
+
+        try {
+            const token = localStorage.getItem('auth_token')
+            const response = await fetch(`/api/events/${eventId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+
+            if (response.ok) {
+                setEvents(events.filter(e => e.id !== eventId))
+            } else {
+                alert('Erro ao deletar evento')
+            }
+        } catch (error) {
+            console.error('Erro ao deletar evento:', error)
+            alert('Erro ao deletar evento')
+        }
+    }
+
     return (
         <div style={{ minHeight: '100vh', background: '#fff', display: 'flex', flexDirection: 'column' }}>
             <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 24px' }}>
@@ -124,22 +151,77 @@ export default function Page() {
                         ) : (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                 {events.map((event) => (
-                                    <Link
+                                    <div
                                         key={event.id}
-                                        href={`/evento/${event.id}`}
                                         style={{
-                                            display: 'block',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
                                             padding: '16px',
                                             border: '1px solid #e5e7eb',
                                             borderRadius: '8px',
-                                            textDecoration: 'none',
-                                            color: 'inherit',
                                         }}
                                     >
-                                        <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#111', margin: '0 0 8px 0' }}>{event.title}</h3>
-                                        {event.location && <p style={{ fontSize: '12px', color: '#6b7280', margin: '0 0 4px 0' }}>📍 {event.location}</p>}
-                                        {event.date && <p style={{ fontSize: '12px', color: '#6b7280', margin: '0' }}>📅 {new Date(event.date).toLocaleDateString('pt-BR')}</p>}
-                                    </Link>
+                                        {/* Info do Evento - Clicável */}
+                                        <Link
+                                            href={`/evento/${event.id}`}
+                                            style={{
+                                                flex: 1,
+                                                textDecoration: 'none',
+                                                color: 'inherit',
+                                            }}
+                                        >
+                                            <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#111', margin: '0 0 8px 0' }}>{event.title}</h3>
+                                            {event.location && <p style={{ fontSize: '12px', color: '#6b7280', margin: '0 0 4px 0' }}>📍 {event.location}</p>}
+                                            {event.date && (
+                                              <p style={{ fontSize: '12px', color: '#6b7280', margin: '0' }}>
+                                                📅 {event.date.split('-').reverse().join('/')}
+                                              </p>
+                                            )}
+                                        </Link>
+
+                                        {/* Botões */}
+                                        <div style={{ display: 'flex', gap: '8px', marginLeft: '16px' }}>
+                                            <Link
+                                                href={`/evento/${event.id}/editar`}
+                                                style={{
+                                                    padding: '8px 12px',
+                                                    background: '#f3f4f6',
+                                                    border: '1px solid #e5e7eb',
+                                                    borderRadius: '6px',
+                                                    fontSize: '12px',
+                                                    fontWeight: 500,
+                                                    color: '#111',
+                                                    textDecoration: 'none',
+                                                    cursor: 'pointer',
+                                                    transition: 'background 0.2s'
+                                                }}
+                                                onMouseOver={(e) => e.target.style.background = '#e5e7eb'}
+                                                onMouseOut={(e) => e.target.style.background = '#f3f4f6'}
+                                            >
+                                                Editar
+                                            </Link>
+
+                                            <button
+                                                onClick={(e) => handleDelete(event.id, e)}
+                                                style={{
+                                                    padding: '8px 12px',
+                                                    background: '#fee2e2',
+                                                    border: '1px solid #fecaca',
+                                                    borderRadius: '6px',
+                                                    fontSize: '12px',
+                                                    fontWeight: 500,
+                                                    color: '#991b1b',
+                                                    cursor: 'pointer',
+                                                    transition: 'background 0.2s'
+                                                }}
+                                                onMouseOver={(e) => e.target.style.background = '#fecaca'}
+                                                onMouseOut={(e) => e.target.style.background = '#fee2e2'}
+                                            >
+                                                Excluir
+                                            </button>
+                                        </div>
+                                    </div>
                                 ))}
                             </div>
                         )}

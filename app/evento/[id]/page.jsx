@@ -65,17 +65,14 @@ export default function EventPage({ params: paramsPromise }) {
 
   /**
    * Função: Formatar data para formato legível
-   * Ex: 2024-03-28 → 28/03/2024
+   * Ex: 2026-04-07 → 07/04/2026
    */
   const formatDate = (dateString) => {
     if (!dateString) return "Data não informada";
 
-    const date = new Date(dateString);
-    return date.toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
+    // Parsear YYYY-MM-DD diretamente para evitar timezone issues
+    const [year, month, day] = dateString.split('-');
+    return `${day}/${month}/${year}`;
   };
 
   /**
@@ -343,13 +340,7 @@ export default function EventPage({ params: paramsPromise }) {
                 </div>
               </div>
             )}
-          </div>
-
-
-          {/* Divisor */}
-          <div
-            style={{ height: "1px", background: "#e5e7eb", margin: "32px 0" }}
-          ></div>
+          </div>    
 
           {/* Lista de Jogadores */}
           <div style={{ marginBottom: "32px" }}>
