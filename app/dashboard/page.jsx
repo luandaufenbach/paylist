@@ -172,10 +172,10 @@ export default function Page() {
                                             }}
                                         >
                                             <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#111', margin: '0 0 8px 0' }}>{event.title}</h3>
-                                            {event.location && <p style={{ fontSize: '12px', color: '#6b7280', margin: '0 0 4px 0' }}>📍 {event.location}</p>}
+                                            {event.location && <p style={{ fontSize: '12px', color: '#6b7280', margin: '0 0 4px 0' }}>{event.location}</p>}
                                             {event.date && (
                                               <p style={{ fontSize: '12px', color: '#6b7280', margin: '0' }}>
-                                                📅 {event.date.split('-').reverse().join('/')}
+                                                 {event.date.split('-').reverse().join('/')}
                                               </p>
                                             )}
                                         </Link>

@@ -140,7 +140,7 @@ export default function UploadReceipt({
                 onMouseOver={(e) => !isLoading && (e.currentTarget.style.borderColor = '#0066ff')}
                 onMouseOut={(e) => !isLoading && (e.currentTarget.style.borderColor = '#e5e7eb')}
             >
-                <div style={{ fontSize: '32px', marginBottom: '12px' }}>📸</div>
+                <div style={{ fontSize: '32px', marginBottom: '12px' }}></div>
                 <p style={{ fontSize: '14px', fontWeight: 500, color: '#111', marginBottom: '4px' }}>
                     {file ? file.name : 'Selecionar comprovante'}
                 </p>

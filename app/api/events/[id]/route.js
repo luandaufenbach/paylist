@@ -32,6 +32,7 @@ export async function DELETE(request, { params: paramsPromise }) {
 
         const user = verifyToken(token)
         const eventId = params.id
+
         const { data: event, error: fetchError } = await supabase
             .from('event')
             .select('user_id')
@@ -45,10 +46,23 @@ export async function DELETE(request, { params: paramsPromise }) {
             )
         }
 
-        if (event.user_id !== user.id) {
+        if (String(event.user_id) !== String(user.id)) {
             return Response.json(
                 { error: 'Você não tem permissão para deletar este evento' },
                 { status: 403 }
+            )
+        }
+
+        // Deletar todos os jogadores do evento primeiro
+        const { error: deletePlayersError } = await supabase
+            .from('players')
+            .delete()
+            .eq('event_id', eventId)
+
+        if (deletePlayersError) {
+            return Response.json(
+                { error: 'Erro ao deletar jogadores do evento' },
+                { status: 500 }
             )
         }
 
@@ -108,7 +122,7 @@ export async function PATCH(request, { params: paramsPromise }) {
             )
         }
 
-        if (event.user_id !== user.id) {
+        if (String(event.user_id) !== String(user.id)) {
             return Response.json(
                 { error: 'Você não tem permissão para editar este evento' },
                 { status: 403 }
