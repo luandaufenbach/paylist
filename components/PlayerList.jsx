@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-export default function PlayerList({ 
-  eventId, 
+export default function PlayerList({
+  eventId,
   maxParticipants = 16,
   isAdmin = false,
   onManagePayment,
@@ -14,6 +14,11 @@ export default function PlayerList({
   const [players, setPlayers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [myPlayerId, setMyPlayerId] = useState(null);
+  const [isMounted, setIsMounted] = useState(false);
+  const [editingPlayerId, setEditingPlayerId] = useState(null);
+  const [editingName, setEditingName] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   const fetchPlayers = useCallback(async () => {
     try {
@@ -40,6 +45,12 @@ export default function PlayerList({
 
   useEffect(() => {
     fetchPlayers();
+
+    // Marcar como montado e ler myPlayerId do localStorage (só funciona no cliente)
+    setIsMounted(true);
+    const myId = localStorage.getItem(`myPlayer_${eventId}`);
+    setMyPlayerId(myId);
+
     //configurar Realtime subscription
     //faz com que a lista atualize AUTOMATICAMENTE quando ha mudanças no banco
     const subscription = supabase
@@ -98,6 +109,59 @@ export default function PlayerList({
     );
   };
 
+  const handleEditClick = (player) => {
+    setEditingPlayerId(player.id);
+    setEditingName(player.name);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingPlayerId(null);
+    setEditingName("");
+  };
+
+  const handleSaveName = async (playerId) => {
+    if (!editingName.trim()) {
+      alert("Nome não pode ficar vazio");
+      return;
+    }
+
+    if (editingName.length < 2) {
+      alert("Nome precisa ter pelo menos 2 caracteres");
+      return;
+    }
+
+    if (editingName.length > 50) {
+      alert("Nome com muito caracteres");
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      const response = await fetch(`/api/players/${playerId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: editingName.trim(),
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        alert(data.error || "Erro ao atualizar nome");
+        return;
+      }
+
+      handleCancelEdit();
+    } catch (error) {
+      console.error("Erro ao atualizar nome:", error);
+      alert("Erro ao atualizar nome");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const paidCount = players.filter((p) => p.paid).length;
 
   if (isLoading) {
@@ -151,7 +215,63 @@ export default function PlayerList({
               {/* Info do Jogador */}
               <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1 }}>
                 <span style={{ fontSize: "12px", fontWeight: 500, color: "#6b7280", width: "24px" }}>{index + 1}</span>
-                <span style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>{player.name}</span>
+
+                {/* Modo Edição: Input + Botões */}
+                {editingPlayerId === player.id ? (
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
+                    <input
+                      type="text"
+                      value={editingName}
+                      onChange={(e) => setEditingName(e.target.value)}
+                      disabled={isSaving}
+                      style={{
+                        flex: 1,
+                        padding: "6px 8px",
+                        border: "1px solid #0066ff",
+                        borderRadius: "4px",
+                        fontSize: "14px",
+                        outline: "none",
+                        boxSizing: "border-box",
+                      }}
+                    />
+                    <button
+                      onClick={() => handleSaveName(player.id)}
+                      disabled={isSaving}
+                      style={{
+                        padding: "6px 10px",
+                        background: "#dcfce7",
+                        color: "#166534",
+                        border: "1px solid #bbf7d0",
+                        borderRadius: "4px",
+                        fontSize: "12px",
+                        fontWeight: 500,
+                        cursor: isSaving ? "not-allowed" : "pointer",
+                        opacity: isSaving ? 0.7 : 1,
+                      }}
+                    >
+                      ✓
+                    </button>
+                    <button
+                      onClick={handleCancelEdit}
+                      disabled={isSaving}
+                      style={{
+                        padding: "6px 10px",
+                        background: "#fee2e2",
+                        color: "#991b1b",
+                        border: "1px solid #fecaca",
+                        borderRadius: "4px",
+                        fontSize: "12px",
+                        fontWeight: 500,
+                        cursor: isSaving ? "not-allowed" : "pointer",
+                        opacity: isSaving ? 0.7 : 1,
+                      }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <span style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>{player.name}</span>
+                )}
               </div>
 
               {/* Modo Admin: Botões */}
@@ -218,8 +338,30 @@ export default function PlayerList({
                   </button>
                 </div>
               ) : (
-                /* Modo Normal: Apenas Status */
-                <PaymentIcon paid={player.paid} />
+                /* Modo Normal: Status + Botão Editar (só para myPlayerId) */
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <PaymentIcon paid={player.paid} />
+                  {isMounted && myPlayerId === player.id && !editingPlayerId && (
+                    <button
+                      onClick={() => handleEditClick(player)}
+                      style={{
+                        padding: "6px 10px",
+                        background: "#f3f4f6",
+                        color: "#111",
+                        border: "1px solid #e5e7eb",
+                        borderRadius: "4px",
+                        fontSize: "12px",
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        transition: "background 0.2s"
+                      }}
+                      onMouseOver={(e) => e.target.style.background = "#e5e7eb"}
+                      onMouseOut={(e) => e.target.style.background = "#f3f4f6"}
+                    >
+                      ✎
+                    </button>
+                  )}
+                </div>
               )}
             </div>
           ))}

@@ -226,8 +226,20 @@ export default function EventAdminPage({ params: paramsPromise }) {
                         </div>
                     </div>
 
+
+            {/* Dados para Transferência PIX */}
+            <div style={{ marginTop: "24px", padding: "16px", background: "#f0f4ff", borderRadius: "8px", border: "1px solid #0066ff" }}>
+              <p style={{ fontSize: "11px", color: "#0066ff", margin: "0 0 12px 0", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>Dados para Transferência</p>
+
+              {/* Nome do Recebedor */}
+              <div style={{ marginBottom: "12px" }}>
+                <p style={{ fontSize: "11px", color: "#6b7280", margin: "0 0 4px 0", fontWeight: 500 }}>Recebedor</p>
+                <p style={{ fontSize: "14px", color: "#111", margin: "0", fontWeight: 600 }}>{event?.pix_receiver_name}</p>
+              </div>
+            </div>
+
                     {/* Divisor */}
-                    <div style={{ height: "1px", background: "#e5e7eb", margin: "32px 0" }}></div>
+{/*                     <div style={{ height: "1px", background: "#e5e7eb", margin: "32px 0" }}></div> */}
 
                     {/* Gerenciar Participantes */}
                     <div style={{ marginBottom: "32px" }}>

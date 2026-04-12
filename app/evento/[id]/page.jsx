@@ -6,6 +6,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import PlayerList from "@/components/PlayerList";
 import AddPlayerForm from "@/components/AddPlayerForm";
+import UploadReceipt from "@/components/UploadReceipt";
 import jwt from "jsonwebtoken";
 
 /**
@@ -181,10 +182,48 @@ export default function EventPage({ params: paramsPromise }) {
                 <p style={{ fontSize: "14px", color: "#111", margin: "0", fontWeight: 500 }}>{formatPrice(event?.price)}</p>
               </div>
             </div>
-          </div>
 
-          {/* Divisor */}
-          <div style={{ height: "1px", background: "#e5e7eb", margin: "32px 0" }}></div>
+            {/* Dados para Transferência PIX */}
+            <div style={{ marginTop: "24px", padding: "16px", background: "#f0f4ff", borderRadius: "8px", border: "1px solid #0066ff" }}>
+              <p style={{ fontSize: "11px", color: "#0066ff", margin: "0 0 12px 0", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>Dados para Transferência</p>
+
+              {/* Nome do Recebedor */}
+              <div style={{ marginBottom: "12px" }}>
+                <p style={{ fontSize: "11px", color: "#6b7280", margin: "0 0 4px 0", fontWeight: 500 }}>Recebedor</p>
+                <p style={{ fontSize: "14px", color: "#111", margin: "0", fontWeight: 600 }}>{event?.pix_receiver_name}</p>
+              </div>
+
+              {/* Chave PIX com Botão de Copy */}
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px", background: "#fff", borderRadius: "6px", border: "1px solid #e5e7eb" }}>
+                <div style={{ flex: 1, minWidth: "0" }}>
+                  <p style={{ fontSize: "11px", color: "#6b7280", margin: "0 0 4px 0", fontWeight: 500 }}>Chave PIX</p>
+                  <p style={{ fontSize: "14px", color: "#111", margin: "0", fontWeight: 500, wordBreak: "break-all" }}>{event?.pix_key}</p>
+                </div>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(event?.pix_key);
+                    alert("Chave PIX copiada!");
+                  }}
+                  style={{
+                    padding: "8px 12px",
+                    background: "#0066ff",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "6px",
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    whiteSpace: "nowrap",
+                    transition: "background 0.2s",
+                  }}
+                  onMouseOver={(e) => (e.target.style.background = "#0052cc")}
+                  onMouseOut={(e) => (e.target.style.background = "#0066ff")}
+                >
+                  Copiar
+                </button>
+              </div>
+            </div>
+          </div>
 
           {/* Lista de Jogadores */}
           <div style={{ marginBottom: "32px" }}>
@@ -210,11 +249,7 @@ export default function EventPage({ params: paramsPromise }) {
             <h3 style={{ fontSize: "12px", fontWeight: 600, color: "#111", textTransform: "uppercase", marginBottom: "24px", letterSpacing: "0.5px" }}>
               Comprovante PIX
             </h3>
-            <div style={{ border: "2px dashed #e5e7eb", borderRadius: "8px", padding: "40px 24px", textAlign: "center" }}>
-              <div style={{ fontSize: "32px", marginBottom: "12px" }}></div>
-              <p style={{ fontSize: "14px", fontWeight: 500, color: "#111", marginBottom: "4px" }}>Selecionar comprovante</p>
-              <p style={{ fontSize: "12px", color: "#6b7280" }}>(PNG, JPG ou PDF)</p>
-            </div>
+            <UploadReceipt eventId={event?.id} />
           </div>
         </div>
       </main>

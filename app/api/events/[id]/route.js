@@ -129,7 +129,7 @@ export async function PATCH(request, { params: paramsPromise }) {
             )
         }
 
-        const { title, location, date, time, price, max_players } = await request.json()
+        const { title, location, date, time, price, max_players, pix_key, pix_receiver_name } = await request.json()
 
         if (!title || !title.trim()) {
             return Response.json(
@@ -152,6 +152,20 @@ export async function PATCH(request, { params: paramsPromise }) {
             )
         }
 
+        if (!pix_key || !pix_key.trim()) {
+            return Response.json(
+                { error: 'Chave PIX é obrigatória' },
+                { status: 400 }
+            )
+        }
+
+        if (!pix_receiver_name || !pix_receiver_name.trim()) {
+            return Response.json(
+                { error: 'Nome de quem recebe é obrigatório' },
+                { status: 400 }
+            )
+        }
+
         const { data: updatedEvent, error: updateError } = await supabase
             .from('event')
             .update({
@@ -160,7 +174,9 @@ export async function PATCH(request, { params: paramsPromise }) {
                 date: date || null,
                 time: time || null,
                 price: Number(price),
-                max_players: Number(max_players)
+                max_players: Number(max_players),
+                pix_key: pix_key.trim(),
+                pix_receiver_name: pix_receiver_name.trim()
             })
             .eq('id', eventId)
             .select()

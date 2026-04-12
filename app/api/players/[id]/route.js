@@ -1,5 +1,29 @@
 import { supabase } from '@/lib/supabase'
 
+export async function GET(request, { params }) {
+    try {
+        const { id } = await params
+
+        const { data, error } = await supabase
+            .from('players')
+            .select('*')
+            .eq('id', id)
+            .single()
+
+        if (error || !data) {
+            return Response.json(
+                { error: 'Jogador não encontrado' },
+                { status: 404 }
+            )
+        }
+
+        return Response.json({ player: data }, { status: 200 })
+    } catch (error) {
+        console.error('Erro ao buscar jogador:', error)
+        return Response.json({ error: error.message }, { status: 500 })
+    }
+}
+
 export async function PATCH(request, { params }) {
     try {
         const { id } = await params

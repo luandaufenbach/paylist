@@ -71,7 +71,7 @@ export async function POST(request) {
 
         const user = verifyToken(token)
 
-        const { title, location, date, time, price, max_players } = await request.json()
+        const { title, location, date, time, price, max_players, pix_key, pix_receiver_name } = await request.json()
 
         if (!title || !title.trim()) {
             return Response.json(
@@ -94,6 +94,20 @@ export async function POST(request) {
             )
         }
 
+        if (!pix_key || !pix_key.trim()) {
+            return Response.json(
+                { error: 'Chave PIX é obrigatória' },
+                { status: 400 }
+            )
+        }
+
+        if (!pix_receiver_name || !pix_receiver_name.trim()) {
+            return Response.json(
+                { error: 'Nome de quem recebe é obrigatório' },
+                { status: 400 }
+            )
+        }
+
         const { data: newEvent, error: insertError } = await supabase
             .from('event')
             .insert({
@@ -103,6 +117,8 @@ export async function POST(request) {
                 time: time || null,
                 price: Number(price),
                 max_players: Number(max_players),
+                pix_key: pix_key.trim(),
+                pix_receiver_name: pix_receiver_name.trim(),
                 user_id: user.id
             })
             .select()

@@ -1,59 +1,85 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function UploadReceipt({
-    eventId,
-    playerId,
-    playerName,
-    onUploadSuccess,
-}) {
+export default function UploadReceipt({ eventId }) {
     const [file, setFile] = useState(null);
-    const [preview, setPreview] = useState(null);
+    const [playerId, setPlayerId] = useState(null);
+    const [playerName, setPlayerName] = useState(null);
+    const [isMounted, setIsMounted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState({
         type: null,
         text: "",
     });
 
-    const handleFileSelect = (e) => {
-        const selectedFile = e.target.files[0];
+    useEffect(() => {
+        setIsMounted(true);
+        const myId = localStorage.getItem(`myPlayer_${eventId}`);
+        setPlayerId(myId);
 
-        if (!selectedFile) return;
-
-        //validar tamanho max 5mb
-        if (selectedFile.size > 5 * 1024 * 1024) {
-            showMessage("Error", "Arquivo muito grande (máx 5MB)");
-            return;
+        // Buscar dados do player para pegar o nome
+        if (myId) {
+            fetchPlayerName(myId);
         }
 
-        //validar tipo
-        const validTypes = ["image/png", "image/jpeg", "application/pdf"];
-        if (!validTypes.includes(selectedFile.type)) {
-            showMessage("error", "Tipo inválido. Use PNG, JPG ou PDF");
-            return;
+        // Ouvir evento de novo jogador adicionado
+        const handlePlayerAdded = (e) => {
+            if (e.detail.eventId === eventId) {
+                setPlayerId(e.detail.playerId);
+                fetchPlayerName(e.detail.playerId);
+            }
+        };
+
+        window.addEventListener("playerAdded", handlePlayerAdded);
+        return () => window.removeEventListener("playerAdded", handlePlayerAdded);
+    }, [eventId]);
+
+    const fetchPlayerName = async (id) => {
+        try {
+            const response = await fetch(`/api/players/${id}`);
+            if (response.ok) {
+                const data = await response.json();
+                setPlayerName(data.player.name);
+            }
+        } catch (error) {
+            console.error("Erro ao buscar dados do player:", error);
         }
-
-        setFile(selectedFile);
-
-        //se é img cria preview (USER VE ANTES DE ENVIAR)
-        if (selectedFile.type.startsWith("image/")) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                setPreview(event.target.result);
-            };
-            reader.readAsDataURL(selectedFile);
-        } else {
-            setPreview(null);
-        }
-
-        setMessage({ type: null, text: "" });
     };
 
-    //mostrar mensagem
+    const validateFile = (selectedFile) => {
+        if (!selectedFile) {
+            return "Selecione um arquivo";
+        }
+
+        const allowedTypes = ["image/png", "image/jpeg", "application/pdf"];
+        if (!allowedTypes.includes(selectedFile.type)) {
+            return "Apenas PNG, JPG ou PDF são permitidos";
+        }
+
+        if (selectedFile.size > 5 * 1024 * 1024) {
+            return "Arquivo não pode exceder 5MB";
+        }
+
+        return null;
+    };
+
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files?.[0];
+        if (selectedFile) {
+            const error = validateFile(selectedFile);
+            if (error) {
+                showMessage("error", error);
+                setFile(null);
+            } else {
+                setFile(selectedFile);
+                setMessage({ type: null, text: "" });
+            }
+        }
+    };
+
     const showMessage = (type, text) => {
         setMessage({ type, text });
-
         if (type === "success") {
             setTimeout(() => {
                 setMessage({ type: null, text: "" });
@@ -61,12 +87,17 @@ export default function UploadReceipt({
         }
     };
 
-    //enviar arquivo p servidor
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!file) {
-            showMessage("error", "Selecione um arquivo");
+        if (!playerId) {
+            showMessage("error", "Você precisa entrar na lista antes de enviar comprovante");
+            return;
+        }
+
+        const validationError = validateFile(file);
+        if (validationError) {
+            showMessage("error", validationError);
             return;
         }
 
@@ -74,139 +105,163 @@ export default function UploadReceipt({
             setIsLoading(true);
             setMessage({ type: null, text: "" });
 
-            //criar formdata (ENVIAR ARQUIVO NO NAVEGADOR)
-            const formData = new FormData()
-            formData.append('file', file)
-            formData.append('event_id', eventId)
-            formData.append('player_id', playerId)
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("event_id", eventId);
+            formData.append("player_id", playerId);
 
-            //fazer upload
-            const response = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData
-            })
+            const uploadResponse = await fetch("/api/upload", {
+                method: "POST",
+                body: formData,
+            });
 
-            const data = await response.json()
+            const uploadData = await uploadResponse.json();
 
-            if (!response.ok) {
-                throw new Error(data.error || 'Erro ao fazer upload')
+            if (!uploadResponse.ok) {
+                throw new Error(uploadData.error || "Erro ao fazer upload");
             }
 
-            //sucesso, chama callback p atualizar a lista
-            showMessage('success', 'Comprovante enviado com sucesso!')
-            setFile(null)
-            setPreview(null)
+            const updateResponse = await fetch(`/api/players/${playerId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    receipt_url: uploadData.url,
+                }),
+            });
 
-            if (onUploadSuccess) {
-                onUploadSuccess({
-                    receipt_url: data.url,
-                    player_id: playerId
-                })
+            const updateData = await updateResponse.json();
+
+            if (!updateResponse.ok) {
+                throw new Error(updateData.error || "Erro ao salvar comprovante");
             }
 
+            const ocrResponse = await fetch("/api/ocr", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    receipt_url: uploadData.url,
+                    event_id: eventId,
+                    player_id: playerId,
+                    player_name: playerName,
+                }),
+            });
+
+            const ocrData = await ocrResponse.json();
+
+            if (ocrResponse.ok && ocrData.success) {
+                showMessage("success", "Comprovante validado!");
+            } else {
+                showMessage("success", "Comprovante enviado! Admin fará a validação manual.");
+            }
+
+            setFile(null);
+            e.target.reset();
         } catch (error) {
-            showMessage('error', error.message)
-            console.error('Erro ao fazer upload:', error)
+            showMessage("error", error.message);
+            console.error("Erro ao enviar comprovante:", error);
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
     };
 
+    if (!isMounted) {
+        return null;
+    }
+
+    if (!playerId) {
+        return (
+            <div style={{
+                padding: "12px",
+                borderRadius: "6px",
+                fontSize: "13px",
+                textAlign: "center",
+                fontWeight: 500,
+                backgroundColor: "#fef3c7",
+                color: "#92400e",
+            }}>
+                Você precisa entrar na lista antes de enviar comprovante
+            </div>
+        );
+    }
+
     return (
-        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-            {/* Input de arquivo (hidden) */}
+        <form
+            onSubmit={handleSubmit}
+            style={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                gap: "12px",
+            }}
+        >
             <input
-                id="receiptFile"
                 type="file"
-                accept="image/png,image/jpeg,application/pdf"
-                onChange={handleFileSelect}
+                onChange={handleFileChange}
                 disabled={isLoading}
-                style={{ display: 'none' }}
+                accept=".png,.jpg,.jpeg,.pdf"
+                style={{
+                    width: "100%",
+                    padding: "10px 12px",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "6px",
+                    fontSize: "14px",
+                    outline: "none",
+                    boxSizing: "border-box",
+                    cursor: isLoading ? "not-allowed" : "pointer",
+                }}
             />
 
-            {/* Área para clicar e selecionar arquivo */}
-            <label
-                htmlFor="receiptFile"
-                style={{
-                    display: 'block',
-                    border: '2px dashed #e5e7eb',
-                    borderRadius: '8px',
-                    padding: '40px 24px',
-                    textAlign: 'center',
-                    cursor: isLoading ? 'not-allowed' : 'pointer',
-                    transition: 'border-color 0.2s',
-                    backgroundColor: file ? '#f9fafb' : '#fff'
-                }}
-                onMouseOver={(e) => !isLoading && (e.currentTarget.style.borderColor = '#0066ff')}
-                onMouseOut={(e) => !isLoading && (e.currentTarget.style.borderColor = '#e5e7eb')}
-            >
-                <div style={{ fontSize: '32px', marginBottom: '12px' }}></div>
-                <p style={{ fontSize: '14px', fontWeight: 500, color: '#111', marginBottom: '4px' }}>
-                    {file ? file.name : 'Selecionar comprovante'}
-                </p>
-                <p style={{ fontSize: '12px', color: '#6b7280' }}>
-                    (PNG, JPG ou PDF)
-                </p>
-            </label>
-
-            {/* Preview da imagem */}
-            {preview && (
-                <div style={{ marginTop: '16px', textAlign: 'center' }}>
-                    <img
-                        src={preview}
-                        alt="Preview"
-                        style={{
-                            maxWidth: '100%',
-                            maxHeight: '200px',
-                            borderRadius: '8px',
-                            border: '1px solid #e5e7eb'
-                        }}
-                    />
-                </div>
-            )}
-
-            {/* Botão enviar */}
             {file && (
-                <button
-                    type="submit"
-                    disabled={isLoading}
-                    style={{
-                        width: '100%',
-                        marginTop: '16px',
-                        padding: '10px 24px',
-                        background: '#0066ff',
-                        color: '#fff',
-                        fontSize: '14px',
-                        fontWeight: 600,
-                        border: 'none',
-                        borderRadius: '6px',
-                        cursor: isLoading ? 'not-allowed' : 'pointer',
-                        opacity: isLoading ? 0.7 : 1,
-                        transition: 'background 0.2s'
-                    }}
-                    onMouseOver={(e) => !isLoading && (e.target.style.background = '#0052cc')}
-                    onMouseOut={(e) => !isLoading && (e.target.style.background = '#0066ff')}
-                >
-                    {isLoading ? 'Enviando...' : 'Enviar Comprovante'}
-                </button>
+                <p style={{ fontSize: "12px", color: "#6b7280", margin: "0" }}>
+                    Arquivo: {file.name}
+                </p>
             )}
 
-            {/* Mensagem de erro/sucesso */}
+            <button
+                type="submit"
+                disabled={!file || isLoading}
+                style={{
+                    width: "100%",
+                    padding: "10px 24px",
+                    background: file && !isLoading ? "#0066ff" : "#d1d5db",
+                    color: "#fff",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: file && !isLoading ? "pointer" : "not-allowed",
+                    opacity: file && !isLoading ? 1 : 0.7,
+                    transition: "background 0.2s",
+                }}
+                onMouseOver={(e) =>
+                    file && !isLoading && (e.target.style.background = "#0052cc")
+                }
+                onMouseOut={(e) =>
+                    file && !isLoading && (e.target.style.background = "#0066ff")
+                }
+            >
+                {isLoading ? "Enviando..." : "Enviar Comprovante"}
+            </button>
+
             {message.text && (
-                <div style={{
-                    marginTop: '16px',
-                    padding: '12px',
-                    borderRadius: '6px',
-                    fontSize: '13px',
-                    textAlign: 'center',
-                    fontWeight: 500,
-                    backgroundColor: message.type === 'error' ? '#fee2e2' : '#dcfce7',
-                    color: message.type === 'error' ? '#991b1b' : '#166534'
-                }}>
+                <div
+                    style={{
+                        padding: "12px",
+                        borderRadius: "6px",
+                        fontSize: "13px",
+                        textAlign: "center",
+                        fontWeight: 500,
+                        backgroundColor: message.type === "error" ? "#fee2e2" : "#dcfce7",
+                        color: message.type === "error" ? "#991b1b" : "#166534",
+                    }}
+                >
                     {message.text}
                 </div>
             )}
         </form>
-    )
-
+    );
 }

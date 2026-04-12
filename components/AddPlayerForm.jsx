@@ -85,7 +85,15 @@ export default function AddPlayerForm({ eventId, onPlayerAdded }) {
       // 2 Enviar p API
       const result = await sendPlayerToAPI();
 
-      // 3 Sucesso: limpar e chamar callback
+      // 3 Sucesso: salvar player_id no localStorage
+      const myPlayerKey = `myPlayer_${eventId}`;
+      localStorage.setItem(myPlayerKey, result.player.id);
+
+      // Disparar evento para outros componentes saberem que mudou
+      window.dispatchEvent(new CustomEvent('playerAdded', {
+        detail: { eventId, playerId: result.player.id, playerName: result.player.name }
+      }));
+
       showMessage("success", "Você entrou na lista! 🎉");
       resetForm();
 

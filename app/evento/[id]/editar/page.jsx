@@ -20,6 +20,8 @@ export default function EditarEvento() {
     time: "",
     price: "",
     max_players: 16,
+    pix_key: "",
+    pix_receiver_name: "",
   });
 
   useEffect(() => {
@@ -49,6 +51,8 @@ export default function EditarEvento() {
               time: event.time || "",
               price: event.price || "",
               max_players: event.max_players || 16,
+              pix_key: event.pix_key || "",
+              pix_receiver_name: event.pix_receiver_name || "",
             });
           } else {
             setMessage({ type: "error", text: "Evento não encontrado" });
@@ -97,6 +101,8 @@ export default function EditarEvento() {
           time: formData.time,
           price: parseFloat(formData.price),
           max_players: parseInt(formData.max_players),
+          pix_key: formData.pix_key.trim(),
+          pix_receiver_name: formData.pix_receiver_name.trim(),
         }),
       });
 
@@ -362,6 +368,70 @@ export default function EditarEvento() {
                   value={formData.max_players}
                   onChange={handleChange}
                   min="1"
+                  required
+                  style={{
+                    width: "100%",
+                    padding: "10px 12px",
+                    marginTop: "8px",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "6px",
+                    fontSize: "14px",
+                    boxSizing: "border-box",
+                    outline: "none",
+                  }}
+                  onFocus={(e) => (e.target.style.borderColor = "#0066ff")}
+                  onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
+                />
+              </div>
+            </div>
+
+            {/* Chave PIX e Nome do Recebedor */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "16px",
+              }}
+            >
+              <div>
+                <label
+                  style={{ fontSize: "12px", fontWeight: 600, color: "#111" }}
+                >
+                  Chave PIX *
+                </label>
+                <input
+                  type="text"
+                  name="pix_key"
+                  value={formData.pix_key}
+                  onChange={handleChange}
+                  placeholder="Ex: 12345678900"
+                  required
+                  style={{
+                    width: "100%",
+                    padding: "10px 12px",
+                    marginTop: "8px",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "6px",
+                    fontSize: "14px",
+                    boxSizing: "border-box",
+                    outline: "none",
+                  }}
+                  onFocus={(e) => (e.target.style.borderColor = "#0066ff")}
+                  onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
+                />
+              </div>
+              <div>
+                <label
+                  style={{ fontSize: "12px", fontWeight: 600, color: "#111" }}
+                >
+                  Nome de quem recebe *
+                </label>
+                <input
+                  type="text"
+                  name="pix_receiver_name"
+                  value={formData.pix_receiver_name}
+                  onChange={handleChange}
+                  placeholder="Ex: João Silva"
                   required
                   style={{
                     width: "100%",
