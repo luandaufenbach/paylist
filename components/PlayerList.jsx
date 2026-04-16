@@ -1,5 +1,8 @@
 "use client";
 
+import { AiOutlineDelete } from "react-icons/ai"
+import { MdOutlineVisibility } from "react-icons/md"
+
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
@@ -301,6 +304,9 @@ export default function PlayerList({
                   <button
                     onClick={() => onViewReceipt(player.receipt_url)}
                     style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                       padding: "6px 10px",
                       background: "#dbeafe",
                       color: "#1e40af",
@@ -309,18 +315,27 @@ export default function PlayerList({
                       fontSize: "12px",
                       fontWeight: 500,
                       cursor: "pointer",
-                      transition: "background 0.2s"
+                      transition: "all 200ms ease"
                     }}
-                    onMouseOver={(e) => e.target.style.background = "#93c5fd"}
-                    onMouseOut={(e) => e.target.style.background = "#dbeafe"}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.background = "#93c5fd"
+                      e.currentTarget.style.color = "#082f49"
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.background = "#dbeafe"
+                      e.currentTarget.style.color = "#1e40af"
+                    }}
                   >
-                    📎
+                    <MdOutlineVisibility size={16} />
                   </button>
 
                   {/* Botão Deletar */}
                   <button
                     onClick={() => onDeletePlayer(player.id, player.paid)}
                     style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                       padding: "6px 10px",
                       background: "#fee2e2",
                       color: "#991b1b",
@@ -329,12 +344,18 @@ export default function PlayerList({
                       fontSize: "12px",
                       fontWeight: 500,
                       cursor: "pointer",
-                      transition: "background 0.2s"
+                      transition: "all 200ms ease"
                     }}
-                    onMouseOver={(e) => e.target.style.background = "#fecaca"}
-                    onMouseOut={(e) => e.target.style.background = "#fee2e2"}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.background = "#fecaca"
+                      e.currentTarget.style.color = "#7f1d1d"
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.background = "#fee2e2"
+                      e.currentTarget.style.color = "#991b1b"
+                    }}
                   >
-                    🗑️
+                    <AiOutlineDelete size={16} />
                   </button>
                 </div>
               ) : (

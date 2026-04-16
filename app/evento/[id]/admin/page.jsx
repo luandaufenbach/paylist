@@ -1,5 +1,7 @@
 "use client";
 
+
+
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -43,7 +45,7 @@ export default function EventAdminPage({ params: paramsPromise }) {
 
             const { data, error: fetchError } = await supabase
                 .from("event")
-                .select("*")
+                .select("*, admin_users(phone, name)")
                 .eq("id", eventId)
                 .single();
 
@@ -160,7 +162,31 @@ export default function EventAdminPage({ params: paramsPromise }) {
                     <p style={{ color: "#6b7280", marginBottom: "24px" }}>
                         {error || "Você não tem permissão para acessar este evento."}
                     </p>
-                    <Link href="/dashboard" style={{ color: "#0066ff", textDecoration: "none", fontWeight: 600 }}>
+                    <Link
+                        href="/dashboard"
+                        style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            padding: "8px 12px",
+                            color: "#0066ff",
+                            textDecoration: "none",
+                            fontWeight: 600,
+                            fontSize: "14px",
+                            borderRadius: "8px",
+                            transition: "all 200ms ease",
+                            backgroundColor: "rgba(0, 102, 255, 0.05)",
+                            cursor: "pointer"
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = "rgba(0, 102, 255, 0.1)"
+                            e.currentTarget.style.transform = "translateX(-4px)"
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = "rgba(0, 102, 255, 0.05)"
+                            e.currentTarget.style.transform = "translateX(0)"
+                        }}
+                    >
                         ← Voltar ao Dashboard
                     </Link>
                 </div>
@@ -174,7 +200,31 @@ export default function EventAdminPage({ params: paramsPromise }) {
                 <div style={{ width: "100%", maxWidth: "600px" }}>
                     {/* Header com link voltar */}
                     <div style={{ marginBottom: "32px" }}>
-                        <Link href="/dashboard" style={{ color: "#0066ff", textDecoration: "none", fontWeight: 600, fontSize: "14px" }}>
+                        <Link
+                            href="/dashboard"
+                            style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "8px",
+                                padding: "8px 12px",
+                                color: "#0066ff",
+                                textDecoration: "none",
+                                fontWeight: 600,
+                                fontSize: "14px",
+                                borderRadius: "8px",
+                                transition: "all 200ms ease",
+                                backgroundColor: "rgba(0, 102, 255, 0.05)",
+                                cursor: "pointer"
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = "rgba(0, 102, 255, 0.1)"
+                                e.currentTarget.style.transform = "translateX(-4px)"
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = "rgba(0, 102, 255, 0.05)"
+                                e.currentTarget.style.transform = "translateX(0)"
+                            }}
+                        >
                             ← Voltar ao Dashboard
                         </Link>
                     </div>
@@ -236,10 +286,18 @@ export default function EventAdminPage({ params: paramsPromise }) {
                 <p style={{ fontSize: "11px", color: "#6b7280", margin: "0 0 4px 0", fontWeight: 500 }}>Recebedor</p>
                 <p style={{ fontSize: "14px", color: "#111", margin: "0", fontWeight: 600 }}>{event?.pix_receiver_name}</p>
               </div>
+
+              {/* Chave PIX com Botão de Copy */}
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px", background: "#fff", borderRadius: "6px", border: "1px solid #e5e7eb" }}>
+                <div style={{ flex: 1, minWidth: "0" }}>
+                  <p style={{ fontSize: "11px", color: "#6b7280", margin: "0 0 4px 0", fontWeight: 500 }}>Chave PIX</p>
+                  <p style={{ fontSize: "14px", color: "#111", margin: "0", fontWeight: 500, wordBreak: "break-all" }}>{event?.pix_key}</p>
+                </div>
+              </div>
             </div>
 
                     {/* Divisor */}
-{/*                     <div style={{ height: "1px", background: "#e5e7eb", margin: "32px 0" }}></div> */}
+                    <div style={{ height: "1px", background: "#e5e7eb", margin: "32px 0" }}></div>
 
                     {/* Gerenciar Participantes */}
                     <div style={{ marginBottom: "32px" }}>

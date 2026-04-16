@@ -125,7 +125,7 @@ export default function AddPlayerForm({ eventId, onPlayerAdded }) {
         type="text"
         value={playerName}
         onChange={(e) => setPlayerName(e.target.value)}
-        placeholder="Seu nome"
+        placeholder="Nome completo (conforme comprovante)"
         disabled={isLoading}
         style={{
           width: "100%",

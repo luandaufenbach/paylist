@@ -1,14 +1,15 @@
 'use client'
-
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { MdContentCopy } from "react-icons/md"
 
 export default function Page() {
     const router = useRouter()
     const [user, setUser] = useState(null)
     const [events, setEvents] = useState([])
     const [isLoading, setIsLoading] = useState(true)
+    const [copiedEventId, setCopiedEventId] = useState(null)
 
     useEffect(() => {
         const token = localStorage.getItem('auth_token')
@@ -79,6 +80,13 @@ export default function Page() {
         }
     }
 
+    const handleCopyEventId = (eventId, e) => {
+        e.stopPropagation()
+        navigator.clipboard.writeText(eventId)
+        setCopiedEventId(eventId)
+        setTimeout(() => setCopiedEventId(null), 2000)
+    }
+
     return (
         <div style={{ minHeight: '100vh', background: '#fff', display: 'flex', flexDirection: 'column' }}>
             <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 24px' }}>
@@ -132,7 +140,7 @@ export default function Page() {
                     </div>
 
                     {/* Divisor */}
-                    <div style={{ height: '1px', background: '#e5e7eb', margin: '32px 0' }}></div>
+                 {/*    <div style={{ height: '1px', background: '#e5e7eb', margin: '32px 0' }}></div> */}
 
                     {/* Lista de Eventos */}
                     <div>
@@ -182,6 +190,38 @@ export default function Page() {
 
                                         {/* Botões */}
                                         <div style={{ display: 'flex', gap: '8px', marginLeft: '16px' }}>
+                                            <button
+                                                onClick={(e) => handleCopyEventId(event.id, e)}
+                                                title="Copiar ID do evento"
+                                                style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    padding: '8px 12px',
+                                                    background: copiedEventId === event.id ? '#d1fae5' : '#f3f4f6',
+                                                    border: '1px solid ' + (copiedEventId === event.id ? '#6ee7b7' : '#e5e7eb'),
+                                                    borderRadius: '6px',
+                                                    fontSize: '12px',
+                                                    fontWeight: 500,
+                                                    color: copiedEventId === event.id ? '#065f46' : '#111',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.2s'
+                                                }}
+                                                onMouseOver={(e) => {
+                                                    if (copiedEventId !== event.id) {
+                                                        e.target.style.background = '#e5e7eb'
+                                                    }
+                                                }}
+                                                onMouseOut={(e) => {
+                                                    if (copiedEventId !== event.id) {
+                                                        e.target.style.background = '#f3f4f6'
+                                                    }
+                                                }}
+                                            >
+                                                <MdContentCopy size={16} style={{ marginRight: copiedEventId === event.id ? '4px' : '0' }} />
+                                                {copiedEventId === event.id && <span>Copiado!</span>}
+                                            </button>
+
                                             <Link
                                                 href={`/evento/${event.id}/editar`}
                                                 style={{

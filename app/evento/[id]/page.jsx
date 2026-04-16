@@ -8,6 +8,7 @@ import PlayerList from "@/components/PlayerList";
 import AddPlayerForm from "@/components/AddPlayerForm";
 import UploadReceipt from "@/components/UploadReceipt";
 import jwt from "jsonwebtoken";
+import { MdContentCopy } from "react-icons/md";
 
 /**
  * Página Pública do Evento
@@ -21,6 +22,7 @@ export default function EventPage({ params: paramsPromise }) {
   const [event, setEvent] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [pixKeyCopied, setPixKeyCopied] = useState(false);
 
   /**
    * Função: Buscar dados do evento
@@ -33,7 +35,7 @@ export default function EventPage({ params: paramsPromise }) {
 
       const { data, error: fetchError } = await supabase
         .from("event")
-        .select("*")
+        .select("*, admin_users(phone, name)")
         .eq("id", eventId)
         .single();
 
@@ -106,6 +108,15 @@ export default function EventPage({ params: paramsPromise }) {
     console.log("Participante adicionado:", participant);
   };
 
+  /**
+   * Função: Copiar Chave PIX com feedback visual
+   */
+  const handleCopyPixKey = () => {
+    navigator.clipboard.writeText(event?.pix_key);
+    setPixKeyCopied(true);
+    setTimeout(() => setPixKeyCopied(false), 2000);
+  };
+
   if (isLoading) {
     return (
       <div style={{ minHeight: "100vh", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -138,10 +149,45 @@ export default function EventPage({ params: paramsPromise }) {
     <div style={{ minHeight: "100vh", background: "#fff", display: "flex", flexDirection: "column" }}>
       <main style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", padding: "32px 24px" }}>
         <div style={{ width: "100%", maxWidth: "600px" }}>
+
+
+          <div style={{ marginBottom: "24px" }}>
+            <Link
+              href="/"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "8px 12px",
+                color: "#0066ff",
+                textDecoration: "none",
+                fontWeight: 600,
+                fontSize: "14px",
+                borderRadius: "8px",
+                transition: "all 200ms ease",
+                backgroundColor: "rgba(0, 102, 255, 0.05)",
+                cursor: "pointer"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(0, 102, 255, 0.1)"
+                e.currentTarget.style.transform = "translateX(-4px)"
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(0, 102, 255, 0.05)"
+                e.currentTarget.style.transform = "translateX(0)"
+              }}
+            >
+              ← Home
+            </Link>
+          </div>
+
           {/* Título do Evento */}
           <div style={{ textAlign: "center", marginBottom: "32px" }}>
             <h1 style={{ fontSize: "24px", fontWeight: 700, color: "#111" }}> {event?.title || "Evento"}</h1>
+
           </div>
+          {/* Botão voltar */}
+
 
           {/* Informações do Evento */}
           <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginBottom: "32px" }}>
@@ -152,6 +198,7 @@ export default function EventPage({ params: paramsPromise }) {
                   <p style={{ fontSize: "12px", color: "#6b7280", margin: "0", fontWeight: 500 }}>Local</p>
                   <p style={{ fontSize: "14px", color: "#111", margin: "0", fontWeight: 500 }}>{event.location}</p>
                 </div>
+
               </div>
             )}
 
@@ -200,26 +247,37 @@ export default function EventPage({ params: paramsPromise }) {
                   <p style={{ fontSize: "14px", color: "#111", margin: "0", fontWeight: 500, wordBreak: "break-all" }}>{event?.pix_key}</p>
                 </div>
                 <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(event?.pix_key);
-                    alert("Chave PIX copiada!");
-                  }}
+                  onClick={handleCopyPixKey}
+                  title="Copiar Chave PIX"
                   style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "6px",
                     padding: "8px 12px",
-                    background: "#0066ff",
-                    color: "#fff",
-                    border: "none",
+                    background: pixKeyCopied ? "#d1fae5" : "#0066ff",
+                    color: pixKeyCopied ? "#065f46" : "#fff",
+                    border: pixKeyCopied ? "1px solid #6ee7b7" : "none",
                     borderRadius: "6px",
                     fontSize: "12px",
                     fontWeight: 600,
                     cursor: "pointer",
                     whiteSpace: "nowrap",
-                    transition: "background 0.2s",
+                    transition: "all 200ms ease",
                   }}
-                  onMouseOver={(e) => (e.target.style.background = "#0052cc")}
-                  onMouseOut={(e) => (e.target.style.background = "#0066ff")}
+                  onMouseOver={(e) => {
+                    if (!pixKeyCopied) {
+                      e.currentTarget.style.background = "#0052cc"
+                    }
+                  }}
+                  onMouseOut={(e) => {
+                    if (!pixKeyCopied) {
+                      e.currentTarget.style.background = "#0066ff"
+                    }
+                  }}
                 >
-                  Copiar
+                  <MdContentCopy size={16} />
+                  {pixKeyCopied ? "Copiado!" : "Copiar"}
                 </button>
               </div>
             </div>
@@ -250,6 +308,30 @@ export default function EventPage({ params: paramsPromise }) {
               Comprovante PIX
             </h3>
             <UploadReceipt eventId={event?.id} />
+
+            {/* Mensagem de suporte com WhatsApp */}
+            {event?.admin_users?.phone && (
+              <div style={{ marginTop: "24px", padding: "16px"}}>
+                <p style={{ fontSize: "13px", color: "#111", margin: "0 0 12px 0" }}>
+                  Dúvidas ou erros?{' '}
+                  <a
+                    href={`https://wa.me/55${event.admin_users.phone}?text=Olá, tenho dúvida sobre meu comprovante do evento ${event.title}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: "#0066ff",
+                      fontWeight: 600,
+                      textDecoration: "none",
+                      transition: "color 0.2s"
+                    }}
+                    onMouseEnter={(e) => (e.target.style.color = "#0052cc")}
+                    onMouseLeave={(e) => (e.target.style.color = "#0066ff")}
+                  >
+                    Converse com o administrador aqui
+                  </a>
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </main>

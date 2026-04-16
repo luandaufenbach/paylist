@@ -4,19 +4,43 @@ import { supabase } from '@/lib/supabase'
 
 export async function POST(request) {
     try {
-        //pega email e senha da req
-        const { email, password } = await request.json()
+        //pega dados da req
+        const { name, email, phone, password } = await request.json()
 
-        //valida se email foi enviado
+        //valida se campos obrigatórios foram enviados
+        if (!name) {
+            return Response.json(
+                { error: 'Nome é obrigatório' },
+                { status: 400 }
+            )
+        }
+
         if (!email) {
             return Response.json(
                 { error: 'Email é obrigatório' },
                 { status: 400 }
             )
         }
+
+        if (!phone) {
+            return Response.json(
+                { error: 'Telefone é obrigatório' },
+                { status: 400 }
+            )
+        }
+
         if (!password) {
             return Response.json(
                 { error: 'Senha é obrigatória' },
+                { status: 400 }
+            )
+        }
+
+        // Validar se telefone tem 11 dígitos
+        const phoneDigits = phone.replace(/\D/g, '')
+        if (phoneDigits.length !== 11) {
+            return Response.json(
+                { error: 'Telefone deve ter 11 dígitos' },
                 { status: 400 }
             )
         }
@@ -51,7 +75,9 @@ export async function POST(request) {
         const { data: newUser, error: insertError } = await supabase
             .from('admin_users')
             .insert({
-                email: email,
+                name: name.trim(),
+                email: email.trim(),
+                phone: phoneDigits,
                 password: hashedPassword
             })
             .select() //retorna dados do registro criado
@@ -78,7 +104,9 @@ export async function POST(request) {
                 message: 'Usuário registrado com sucesso',
                 user: {
                     id: newUser[0].id,
-                    email: newUser[0].email
+                    name: newUser[0].name,
+                    email: newUser[0].email,
+                    phone: newUser[0].phone
                 },
                 token: token
             },

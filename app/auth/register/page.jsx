@@ -7,7 +7,9 @@ export default function RegisterPage() {
     const router = useRouter()
 
     //estados do form
+    const [name, setName] = useState('')
     const [email, setEmail] = useState('')
+    const [phone, setPhone] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
 
@@ -21,8 +23,25 @@ export default function RegisterPage() {
     const validateInputs = () => {
         setError('')
 
+        if (!name.trim()) {
+            setError('Nome é obrigatório')
+            return false
+        }
+
         if (!email.trim()) {
             setError('Email é obrigatório')
+            return false
+        }
+
+        if (!phone.trim()) {
+            setError('Telefone é obrigatório')
+            return false
+        }
+
+        // Validar telefone (11 dígitos)
+        const phoneDigits = phone.replace(/\D/g, '')
+        if (phoneDigits.length !== 11) {
+            setError('Telefone deve ter 11 dígitos (com DDD)')
             return false
         }
 
@@ -66,7 +85,9 @@ export default function RegisterPage() {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
+                    name: name.trim(),
                     email: email.trim(),
+                    phone: phone.replace(/\D/g, ''),
                     password: password
                 })
             })
@@ -122,6 +143,32 @@ export default function RegisterPage() {
 
                 {/* Formulário */}
                 <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {/* Nome */}
+                    <div>
+                        <label style={{ fontSize: '12px', fontWeight: 600, color: '#111', marginBottom: '6px', display: 'block' }}>
+                            Nome
+                        </label>
+                        <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="Seu nome completo"
+                            disabled={isLoading}
+                            style={{
+                                width: '100%',
+                                padding: '10px 12px',
+                                border: '1px solid #ddd',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                outline: 'none',
+                                boxSizing: 'border-box',
+                                transition: 'border-color 0.2s'
+                            }}
+                            onFocus={(e) => (e.target.style.borderColor = '#0066ff')}
+                            onBlur={(e) => (e.target.style.borderColor = '#ddd')}
+                        />
+                    </div>
+
                     {/* Email */}
                     <div>
                         <label style={{ fontSize: '12px', fontWeight: 600, color: '#111', marginBottom: '6px', display: 'block' }}>
@@ -146,6 +193,39 @@ export default function RegisterPage() {
                             onFocus={(e) => (e.target.style.borderColor = '#0066ff')}
                             onBlur={(e) => (e.target.style.borderColor = '#ddd')}
                         />
+                    </div>
+
+                    {/* Telefone */}
+                    <div>
+                        <label style={{ fontSize: '12px', fontWeight: 600, color: '#111', marginBottom: '6px', display: 'block' }}>
+                            Telefone
+                        </label>
+                        <input
+                            type="tel"
+                            value={phone}
+                            onChange={(e) => {
+                                const digits = e.target.value.replace(/\D/g, '')
+                                const formatted = digits.length > 0 ? `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}` : ''
+                                setPhone(formatted)
+                            }}
+                            placeholder="(11) 99999-9999"
+                            disabled={isLoading}
+                            style={{
+                                width: '100%',
+                                padding: '10px 12px',
+                                border: '1px solid #ddd',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                outline: 'none',
+                                boxSizing: 'border-box',
+                                transition: 'border-color 0.2s'
+                            }}
+                            onFocus={(e) => (e.target.style.borderColor = '#0066ff')}
+                            onBlur={(e) => (e.target.style.borderColor = '#ddd')}
+                        />
+                        <p style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>
+                            Com DDD (11 dígitos)
+                        </p>
                     </div>
 
                     {/* Senha */}

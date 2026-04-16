@@ -18,7 +18,7 @@ export async function POST(request) {
         //buscar dados do evento (p validar)
         const { data: event, error: eventError } = await supabase
             .from('event')
-            .select('*')
+            .select('*, admin_users(phone, name)')
             .eq('id', event_id)
             .single()
 
