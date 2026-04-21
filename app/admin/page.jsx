@@ -4,14 +4,14 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation' 
 
 export default function AdminPage() {
-    const router = useRouter()  // ← ADICIONE isto
+    const router = useRouter()  
 
     // Proteção de autenticação
     useEffect(() => {
         const token = localStorage.getItem('auth_token')
 
         if (!token) {
-            // Sem token → redirect para login
+            // Sem token - redirect para login
             router.push('/auth/login')
             return
         }

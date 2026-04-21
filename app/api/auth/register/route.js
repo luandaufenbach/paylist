@@ -83,8 +83,9 @@ export async function POST(request) {
             .select() //retorna dados do registro criado
 
         if (insertError) {
+            console.error('Erro ao inserir usuário:', insertError)
             return Response.json(
-                { error: 'Erro ao criar usuário' },
+                { error: insertError.message || 'Erro ao criar usuário' },
                 { status: 500 }
             )
         }
@@ -92,7 +93,8 @@ export async function POST(request) {
         const token = jwt.sign(
             {
                 id: newUser[0].id,
-                email: newUser[0].email
+                email: newUser[0].email,
+                name: newUser[0].name
             },
             process.env.JWT_SECRET,
             { expiresIn: '7d' }

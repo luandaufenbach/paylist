@@ -94,7 +94,7 @@ export default function AddPlayerForm({ eventId, onPlayerAdded }) {
         detail: { eventId, playerId: result.player.id, playerName: result.player.name }
       }));
 
-      showMessage("success", "Você entrou na lista! 🎉");
+      showMessage("success", "Você entrou na lista!");
       resetForm();
 
       // Chamar função do parent para atualizar lista

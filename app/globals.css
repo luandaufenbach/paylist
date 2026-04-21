@@ -1,6 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 * {
   margin: 0;
@@ -18,4 +15,31 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Media Queries Responsivas - Mobile */
+@media (max-width: 768px) {
+  input, textarea, select, button {
+    font-size: 16px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    font-size: 14px;
+  }
+
+  /* Grid responsivo quebra em 1 coluna */
+  .grid-responsive {
+    grid-template-columns: 1fr !important;
+  }
 }

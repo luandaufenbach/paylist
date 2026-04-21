@@ -95,7 +95,7 @@ export default function Page() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                         <div>
                             <p style={{ fontSize: '12px', color: '#6b7280', margin: '0', fontWeight: 500 }}>Bem-vindo</p>
-                            <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#111', margin: '4px 0 0 0' }}>{user?.email}</h1>
+                            <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#111', margin: '4px 0 0 0' }}>{user?.name}</h1>
                         </div>
                         <button
                             onClick={handleLogout}
@@ -197,7 +197,7 @@ export default function Page() {
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
-                                                    padding: '8px 12px',
+                                                    padding: '10px 16px',
                                                     background: copiedEventId === event.id ? '#d1fae5' : '#f3f4f6',
                                                     border: '1px solid ' + (copiedEventId === event.id ? '#6ee7b7' : '#e5e7eb'),
                                                     borderRadius: '6px',
@@ -225,7 +225,7 @@ export default function Page() {
                                             <Link
                                                 href={`/evento/${event.id}/editar`}
                                                 style={{
-                                                    padding: '8px 12px',
+                                                    padding: '10px 16px',
                                                     background: '#f3f4f6',
                                                     border: '1px solid #e5e7eb',
                                                     borderRadius: '6px',
@@ -245,7 +245,7 @@ export default function Page() {
                                             <button
                                                 onClick={(e) => handleDelete(event.id, e)}
                                                 style={{
-                                                    padding: '8px 12px',
+                                                    padding: '10px 16px',
                                                     background: '#fee2e2',
                                                     border: '1px solid #fecaca',
                                                     borderRadius: '6px',
@@ -272,6 +272,15 @@ export default function Page() {
             <style>{`
                 @keyframes spin {
                     to { transform: rotate(360deg); }
+                }
+
+                @media (max-width: 640px) {
+                    main {
+                        padding: 24px 16px !important;
+                    }
+                    div[style*="gap"] {
+                        gap: 12px !important;
+                    }
                 }
             `}</style>
         </div>

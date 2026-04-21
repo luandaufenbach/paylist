@@ -68,8 +68,6 @@ export default function LoginPage() {
             localStorage.setItem('user', JSON.stringify(data.user))
 
             router.push('/dashboard')
-
-            return data
         } catch (err) {
             setError(err.message)
             console.error('Erro ao fazer login:', err)
@@ -122,7 +120,7 @@ export default function LoginPage() {
                             disabled={isLoading}
                             style={{
                                 width: '100%',
-                                padding: '10px 12px',
+                                padding: '12px 16px',
                                 border: '1px solid #ddd',
                                 borderRadius: '6px',
                                 fontSize: '14px',
@@ -148,7 +146,7 @@ export default function LoginPage() {
                             disabled={isLoading}
                             style={{
                                 width: '100%',
-                                padding: '10px 12px',
+                                padding: '12px 16px',
                                 border: '1px solid #ddd',
                                 borderRadius: '6px',
                                 fontSize: '14px',
@@ -200,6 +198,13 @@ export default function LoginPage() {
                     </a>
                 </p>
 
+                {/* Link para recuperar senha */}
+                <p style={{ textAlign: 'center', fontSize: '13px', color: '#666', marginTop: '12px' }}>
+                    <a href="/auth/forgot-password" style={{ color: '#0066ff', textDecoration: 'none', fontWeight: 600 }}>
+                        Esqueceu sua senha?
+                    </a>
+                </p>
+
                 {/* Link voltar */}
                 <p style={{ textAlign: 'center', fontSize: '13px', color: '#999', marginTop: '12px' }}>
                     <a href="/" style={{ color: '#666', textDecoration: 'none' }}>
@@ -207,6 +212,20 @@ export default function LoginPage() {
                     </a>
                 </p>
             </div>
+
+            <style>{`
+                @media (max-width: 640px) {
+                    div > div {
+                        padding: 24px 16px !important;
+                    }
+                    h1 {
+                        font-size: 20px !important;
+                    }
+                    p {
+                        font-size: 13px !important;
+                    }
+                }
+            `}</style>
         </div>
     )
 }

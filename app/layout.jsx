@@ -2,14 +2,14 @@ import './globals.css'
 
 /**
  * Layout Raiz
- *
- * envolve TODA a aplicação
  * tags HTML, head, body
- * Todos os outros layouts herdam deste
  */
 export const metadata = {
   title: 'payList',
   description: 'Organize eventos',
+  icons: {
+    icon: '/favicon.ico',  
+  },
 }
 
 export default function RootLayout({ children }) {
@@ -19,3 +19,5 @@ export default function RootLayout({ children }) {
     </html>
   )
 }
+
+

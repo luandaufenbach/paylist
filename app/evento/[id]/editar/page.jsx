@@ -219,7 +219,7 @@ export default function EditarEvento() {
                 required
                 style={{
                   width: "100%",
-                  padding: "10px 12px",
+                  padding: "12px 16px",
                   marginTop: "8px",
                   border: "1px solid #e5e7eb",
                   borderRadius: "6px",
@@ -247,7 +247,7 @@ export default function EditarEvento() {
                 placeholder="Ex: Resenha da Bola"
                 style={{
                   width: "100%",
-                  padding: "10px 12px",
+                  padding: "12px 16px",
                   marginTop: "8px",
                   border: "1px solid #e5e7eb",
                   borderRadius: "6px",
@@ -262,6 +262,7 @@ export default function EditarEvento() {
 
             {/* Data e Hora */}
             <div
+              data-mobile-grid
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
@@ -281,7 +282,7 @@ export default function EditarEvento() {
                   onChange={handleChange}
                   style={{
                     width: "100%",
-                    padding: "10px 12px",
+                    padding: "12px 16px",
                     marginTop: "8px",
                     border: "1px solid #e5e7eb",
                     borderRadius: "6px",
@@ -306,7 +307,7 @@ export default function EditarEvento() {
                   onChange={handleChange}
                   style={{
                     width: "100%",
-                    padding: "10px 12px",
+                    padding: "12px 16px",
                     marginTop: "8px",
                     border: "1px solid #e5e7eb",
                     borderRadius: "6px",
@@ -322,6 +323,7 @@ export default function EditarEvento() {
 
             {/* Valor e Limite */}
             <div
+              data-mobile-grid
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
@@ -344,7 +346,7 @@ export default function EditarEvento() {
                   required
                   style={{
                     width: "100%",
-                    padding: "10px 12px",
+                    padding: "12px 16px",
                     marginTop: "8px",
                     border: "1px solid #e5e7eb",
                     borderRadius: "6px",
@@ -371,7 +373,7 @@ export default function EditarEvento() {
                   required
                   style={{
                     width: "100%",
-                    padding: "10px 12px",
+                    padding: "12px 16px",
                     marginTop: "8px",
                     border: "1px solid #e5e7eb",
                     borderRadius: "6px",
@@ -387,6 +389,7 @@ export default function EditarEvento() {
 
             {/* Chave PIX e Nome do Recebedor */}
             <div
+              data-mobile-grid
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
@@ -408,7 +411,7 @@ export default function EditarEvento() {
                   required
                   style={{
                     width: "100%",
-                    padding: "10px 12px",
+                    padding: "12px 16px",
                     marginTop: "8px",
                     border: "1px solid #e5e7eb",
                     borderRadius: "6px",
@@ -435,7 +438,7 @@ export default function EditarEvento() {
                   required
                   style={{
                     width: "100%",
-                    padding: "10px 12px",
+                    padding: "12px 16px",
                     marginTop: "8px",
                     border: "1px solid #e5e7eb",
                     borderRadius: "6px",
@@ -500,6 +503,15 @@ export default function EditarEvento() {
       <style>{`
         @keyframes spin {
           to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 640px) {
+          [data-mobile-grid] {
+            grid-template-columns: 1fr !important;
+          }
+          main {
+            padding: 24px 16px !important;
+          }
         }
       `}</style>
     </div>

@@ -8,6 +8,7 @@ export default function UploadReceipt({ eventId }) {
     const [playerName, setPlayerName] = useState(null);
     const [isMounted, setIsMounted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isOcrProcessing, setIsOcrProcessing] = useState(false);
     const [message, setMessage] = useState({
         type: null,
         text: "",
@@ -137,6 +138,10 @@ export default function UploadReceipt({ eventId }) {
                 throw new Error(updateData.error || "Erro ao salvar comprovante");
             }
 
+            // Iniciar processamento OCR
+            setIsOcrProcessing(true);
+            setMessage({ type: null, text: "" });
+
             const ocrResponse = await fetch("/api/ocr", {
                 method: "POST",
                 headers: {
@@ -149,6 +154,8 @@ export default function UploadReceipt({ eventId }) {
                     player_name: playerName,
                 }),
             });
+
+            setIsOcrProcessing(false);
 
             const ocrData = await ocrResponse.json();
 
@@ -223,28 +230,28 @@ export default function UploadReceipt({ eventId }) {
 
             <button
                 type="submit"
-                disabled={!file || isLoading}
+                disabled={!file || isLoading || isOcrProcessing}
                 style={{
                     width: "100%",
                     padding: "10px 24px",
-                    background: file && !isLoading ? "#0066ff" : "#d1d5db",
+                    background: file && !isLoading && !isOcrProcessing ? "#0066ff" : "#d1d5db",
                     color: "#fff",
                     fontSize: "14px",
                     fontWeight: 600,
                     border: "none",
                     borderRadius: "6px",
-                    cursor: file && !isLoading ? "pointer" : "not-allowed",
-                    opacity: file && !isLoading ? 1 : 0.7,
+                    cursor: file && !isLoading && !isOcrProcessing ? "pointer" : "not-allowed",
+                    opacity: file && !isLoading && !isOcrProcessing ? 1 : 0.7,
                     transition: "background 0.2s",
                 }}
                 onMouseOver={(e) =>
-                    file && !isLoading && (e.target.style.background = "#0052cc")
+                    file && !isLoading && !isOcrProcessing && (e.target.style.background = "#0052cc")
                 }
                 onMouseOut={(e) =>
-                    file && !isLoading && (e.target.style.background = "#0066ff")
+                    file && !isLoading && !isOcrProcessing && (e.target.style.background = "#0066ff")
                 }
             >
-                {isLoading ? "Enviando..." : "Enviar Comprovante"}
+                {isOcrProcessing ? "Verificando comprovante..." : isLoading ? "Enviando..." : "Enviar Comprovante"}
             </button>
 
             {message.text && (

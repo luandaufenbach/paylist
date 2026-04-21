@@ -1,7 +1,5 @@
 "use client";
 
-
-
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -123,6 +121,11 @@ export default function EventAdminPage({ params: paramsPromise }) {
             const data = await response.json();
             if (!response.ok) throw new Error(data.error);
 
+            // Disparar evento para PlayerList atualizar
+            window.dispatchEvent(new CustomEvent('playerDeleted', {
+                detail: { eventId: event.id, playerId }
+            }));
+
             fetchEvent(event.id);
         } catch (error) {
             alert('Erro ao excluir: ' + error.message);
@@ -167,7 +170,7 @@ export default function EventAdminPage({ params: paramsPromise }) {
                         style={{
                             display: "inline-flex",
                             alignItems: "center",
-                            gap: "8px",
+                            gap: "12px",
                             padding: "8px 12px",
                             color: "#0066ff",
                             textDecoration: "none",
@@ -205,7 +208,7 @@ export default function EventAdminPage({ params: paramsPromise }) {
                             style={{
                                 display: "inline-flex",
                                 alignItems: "center",
-                                gap: "8px",
+                                gap: "12px",
                                 padding: "8px 12px",
                                 color: "#0066ff",
                                 textDecoration: "none",

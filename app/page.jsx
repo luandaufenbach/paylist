@@ -200,6 +200,21 @@ export default function Home() {
           </Link>
         </p>
       </div>
+
+      <style>{`
+        @media (max-width: 640px) {
+          div[style*="padding: 24px"] {
+            padding: 16px !important;
+          }
+          h2 {
+            font-size: 28px !important;
+          }
+          p {
+            font-size: 14px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
+

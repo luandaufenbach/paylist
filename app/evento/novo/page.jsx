@@ -142,7 +142,7 @@ export default function NovoEvento() {
                 required
                 style={{
                   width: "100%",
-                  padding: "10px 12px",
+                  padding: "12px 16px",
                   marginTop: "8px",
                   border: "1px solid #e5e7eb",
                   borderRadius: "6px",
@@ -170,7 +170,7 @@ export default function NovoEvento() {
                 placeholder="Ex: Resenha da Bola"
                 style={{
                   width: "100%",
-                  padding: "10px 12px",
+                  padding: "12px 16px",
                   marginTop: "8px",
                   border: "1px solid #e5e7eb",
                   borderRadius: "6px",
@@ -185,6 +185,7 @@ export default function NovoEvento() {
 
             {/* Data e Hora */}
             <div
+              data-mobile-grid
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
@@ -204,7 +205,7 @@ export default function NovoEvento() {
                   onChange={handleChange}
                   style={{
                     width: "100%",
-                    padding: "10px 12px",
+                    padding: "12px 16px",
                     marginTop: "8px",
                     border: "1px solid #e5e7eb",
                     borderRadius: "6px",
@@ -229,7 +230,7 @@ export default function NovoEvento() {
                   onChange={handleChange}
                   style={{
                     width: "100%",
-                    padding: "10px 12px",
+                    padding: "12px 16px",
                     marginTop: "8px",
                     border: "1px solid #e5e7eb",
                     borderRadius: "6px",
@@ -245,6 +246,7 @@ export default function NovoEvento() {
 
             {/* Valor e Limite */}
             <div
+              data-mobile-grid
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
@@ -267,7 +269,7 @@ export default function NovoEvento() {
                   required
                   style={{
                     width: "100%",
-                    padding: "10px 12px",
+                    padding: "12px 16px",
                     marginTop: "8px",
                     border: "1px solid #e5e7eb",
                     borderRadius: "6px",
@@ -294,7 +296,7 @@ export default function NovoEvento() {
                   required
                   style={{
                     width: "100%",
-                    padding: "10px 12px",
+                    padding: "12px 16px",
                     marginTop: "8px",
                     border: "1px solid #e5e7eb",
                     borderRadius: "6px",
@@ -310,6 +312,7 @@ export default function NovoEvento() {
 
             {/* Chave PIX e Nome do Recebedor */}
             <div
+              data-mobile-grid
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
@@ -331,7 +334,7 @@ export default function NovoEvento() {
                   required
                   style={{
                     width: "100%",
-                    padding: "10px 12px",
+                    padding: "12px 16px",
                     marginTop: "8px",
                     border: "1px solid #e5e7eb",
                     borderRadius: "6px",
@@ -358,7 +361,7 @@ export default function NovoEvento() {
                   required
                   style={{
                     width: "100%",
-                    padding: "10px 12px",
+                    padding: "12px 16px",
                     marginTop: "8px",
                     border: "1px solid #e5e7eb",
                     borderRadius: "6px",
@@ -423,6 +426,15 @@ export default function NovoEvento() {
       <style>{`
         @keyframes spin {
           to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 640px) {
+          [data-mobile-grid] {
+            grid-template-columns: 1fr !important;
+          }
+          main {
+            padding: 24px 16px !important;
+          }
         }
       `}</style>
     </div>

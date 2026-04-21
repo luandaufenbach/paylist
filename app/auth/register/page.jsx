@@ -103,8 +103,6 @@ export default function RegisterPage() {
 
             router.push('/dashboard')
 
-            return data
-
         } catch (error) {
             setError(error.message)
             console.error('Erro ao registrar:', error)
@@ -156,7 +154,7 @@ export default function RegisterPage() {
                             disabled={isLoading}
                             style={{
                                 width: '100%',
-                                padding: '10px 12px',
+                                padding: '12px 16px',
                                 border: '1px solid #ddd',
                                 borderRadius: '6px',
                                 fontSize: '14px',
@@ -182,7 +180,7 @@ export default function RegisterPage() {
                             disabled={isLoading}
                             style={{
                                 width: '100%',
-                                padding: '10px 12px',
+                                padding: '12px 16px',
                                 border: '1px solid #ddd',
                                 borderRadius: '6px',
                                 fontSize: '14px',
@@ -212,7 +210,7 @@ export default function RegisterPage() {
                             disabled={isLoading}
                             style={{
                                 width: '100%',
-                                padding: '10px 12px',
+                                padding: '12px 16px',
                                 border: '1px solid #ddd',
                                 borderRadius: '6px',
                                 fontSize: '14px',
@@ -241,7 +239,7 @@ export default function RegisterPage() {
                             disabled={isLoading}
                             style={{
                                 width: '100%',
-                                padding: '10px 12px',
+                                padding: '12px 16px',
                                 border: '1px solid #ddd',
                                 borderRadius: '6px',
                                 fontSize: '14px',
@@ -270,7 +268,7 @@ export default function RegisterPage() {
                             disabled={isLoading}
                             style={{
                                 width: '100%',
-                                padding: '10px 12px',
+                                padding: '12px 16px',
                                 border: '1px solid #ddd',
                                 borderRadius: '6px',
                                 fontSize: '14px',
@@ -329,6 +327,20 @@ export default function RegisterPage() {
                     </a>
                 </p>
             </div>
+
+            <style>{`
+                @media (max-width: 640px) {
+                    div > div {
+                        padding: 24px 16px !important;
+                    }
+                    h1 {
+                        font-size: 20px !important;
+                    }
+                    p {
+                        font-size: 13px !important;
+                    }
+                }
+            `}</style>
         </div>
     )
 }

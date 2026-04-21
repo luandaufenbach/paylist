@@ -68,7 +68,7 @@ export default function EventPage({ params: paramsPromise }) {
   };
 
   /**
-   * Hook: useEffect
+   * useEffect
    * Executar quando a página carrega
    * Buscar os dados do evento usando o ID da URL
    */
@@ -79,8 +79,8 @@ export default function EventPage({ params: paramsPromise }) {
   }, [params.id]);
 
   /**
-   * Função: Formatar data para formato legível
-   * Ex: 2026-04-07 → 07/04/2026
+   * Funçao: Formatar data
+   * 2026-04-07 - 07/04/2026
    */
   const formatDate = (dateString) => {
     if (!dateString) return "Data não informada";
@@ -90,8 +90,8 @@ export default function EventPage({ params: paramsPromise }) {
   };
 
   /**
-   * Função: Formatar valor em moeda brasileira
-   * Ex: 15 → R$ 15,00
+   * Funcao: Formatar valor em real 
+   * Ex: 15 - R$ 15,00
    */
   const formatPrice = (price) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -100,16 +100,12 @@ export default function EventPage({ params: paramsPromise }) {
     }).format(price);
   };
 
-  /**
-   * Função: Callback quando um participante é adicionado
-   * Chamado por AddPlayerForm após sucesso
-   */
   const handleParticipantAdded = (participant) => {
-    console.log("Participante adicionado:", participant);
+    // Callback executado quando participante é adicionado
   };
 
   /**
-   * Função: Copiar Chave PIX com feedback visual
+   * Função: copiar Chave PIX com feedback visual
    */
   const handleCopyPixKey = () => {
     navigator.clipboard.writeText(event?.pix_key);
@@ -157,7 +153,7 @@ export default function EventPage({ params: paramsPromise }) {
               style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: "8px",
+                gap: "12px",
                 padding: "8px 12px",
                 color: "#0066ff",
                 textDecoration: "none",

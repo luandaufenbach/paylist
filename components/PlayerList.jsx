@@ -18,7 +18,6 @@ export default function PlayerList({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [myPlayerId, setMyPlayerId] = useState(null);
-  const [isMounted, setIsMounted] = useState(false);
   const [editingPlayerId, setEditingPlayerId] = useState(null);
   const [editingName, setEditingName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -47,15 +46,34 @@ export default function PlayerList({
   }, [eventId]);
 
   useEffect(() => {
-    fetchPlayers();
-
-    // Marcar como montado e ler myPlayerId do localStorage (só funciona no cliente)
-    setIsMounted(true);
+    // Ler myPlayerId do localStorage
     const myId = localStorage.getItem(`myPlayer_${eventId}`);
     setMyPlayerId(myId);
 
+    // Buscar jogadores
+    fetchPlayers();
+
+    // Listener para playerAdded (atualizar myPlayerId quando user entra na lista)
+    const handlePlayerAdded = (e) => {
+      if (e.detail.eventId === eventId) {
+        const newMyId = localStorage.getItem(`myPlayer_${eventId}`);
+        setMyPlayerId(newMyId);
+      }
+    };
+
+    // Listener para playerDeleted (remover imediatamente da lista)
+    const handlePlayerDeleted = (e) => {
+      if (e.detail.eventId === eventId) {
+        setPlayers((prevPlayers) =>
+          prevPlayers.filter((player) => player.id !== e.detail.playerId)
+        );
+      }
+    };
+
+    window.addEventListener('playerAdded', handlePlayerAdded);
+    window.addEventListener('playerDeleted', handlePlayerDeleted);
+
     //configurar Realtime subscription
-    //faz com que a lista atualize AUTOMATICAMENTE quando ha mudanças no banco
     const subscription = supabase
       .channel(`players-${eventId}`)
       .on(
@@ -67,17 +85,11 @@ export default function PlayerList({
           filter: `event_id=eq.${eventId}`,
         },
         (payload) => {
-          //payload.new = novo registro (INSERT ou UPDATE)
-          //payload.old = registro antigo (DELETE ou UPDATE)
-          //payload.eventType = 'INSERT' | 'UPDATE' | 'DELETE'
-
           if (payload.eventType === "INSERT") {
-            //novo jogador entrou: adicionar à lista
             setPlayers((prevPlayers) => [...prevPlayers, payload.new]);
           }
 
           if (payload.eventType === "UPDATE") {
-            //jogador foi atualizado (ex: marcado como pago)
             setPlayers((prevPlayers) =>
               prevPlayers.map((player) =>
                 player.id === payload.new.id ? payload.new : player,
@@ -86,7 +98,6 @@ export default function PlayerList({
           }
 
           if (payload.eventType === "DELETE") {
-            //jogador foi removido
             setPlayers((prevPlayers) =>
               prevPlayers.filter((player) => player.id !== payload.old.id),
             );
@@ -96,6 +107,8 @@ export default function PlayerList({
       .subscribe();
 
     return () => {
+      window.removeEventListener('playerAdded', handlePlayerAdded);
+      window.removeEventListener('playerDeleted', handlePlayerDeleted);
       subscription.unsubscribe();
     };
   }, [eventId, fetchPlayers]);
@@ -212,7 +225,7 @@ export default function PlayerList({
           <p style={{ fontSize: "14px", color: "#6b7280" }}>Nenhum participante ainda</p>
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {players.map((player, index) => (
             <div key={player.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px", border: "1px solid #e5e7eb", borderRadius: "8px", transition: "background-color 0.2s" }}>
               {/* Info do Jogador */}
@@ -221,7 +234,7 @@ export default function PlayerList({
 
                 {/* Modo Edição: Input + Botões */}
                 {editingPlayerId === player.id ? (
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1 }}>
                     <input
                       type="text"
                       value={editingName}
@@ -247,6 +260,7 @@ export default function PlayerList({
                         border: "1px solid #bbf7d0",
                         borderRadius: "4px",
                         fontSize: "12px",
+
                         fontWeight: 500,
                         cursor: isSaving ? "not-allowed" : "pointer",
                         opacity: isSaving ? 0.7 : 1,
@@ -265,6 +279,7 @@ export default function PlayerList({
                         borderRadius: "4px",
                         fontSize: "12px",
                         fontWeight: 500,
+                        marginRight: "10px",
                         cursor: isSaving ? "not-allowed" : "pointer",
                         opacity: isSaving ? 0.7 : 1,
                       }}
@@ -279,7 +294,7 @@ export default function PlayerList({
 
               {/* Modo Admin: Botões */}
               {isAdmin ? (
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                   {/* Status de Pagamento - Clicável */}
                   <button
                     onClick={() => onManagePayment(player.id, player.paid)}
@@ -360,9 +375,9 @@ export default function PlayerList({
                 </div>
               ) : (
                 /* Modo Normal: Status + Botão Editar (só para myPlayerId) */
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                   <PaymentIcon paid={player.paid} />
-                  {isMounted && myPlayerId === player.id && !editingPlayerId && (
+                  {myPlayerId === player.id && !editingPlayerId && (
                     <button
                       onClick={() => handleEditClick(player)}
                       style={{
