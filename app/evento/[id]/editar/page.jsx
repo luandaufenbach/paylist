@@ -521,6 +521,13 @@ export default function EditarEvento() {
           to { transform: rotate(360deg); }
         }
 
+        /* Remover estilo nativo do iOS para date/time */
+        input[type="date"],
+        input[type="time"] {
+          -webkit-appearance: none;
+          appearance: none;
+        }
+
         @media (max-width: 640px) {
           [data-mobile-grid] {
             grid-template-columns: 1fr !important;

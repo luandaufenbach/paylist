@@ -250,7 +250,7 @@ export default function PlayerList({
                       onClick={() => handleSaveName(player.id)}
                       disabled={isSaving}
                       style={{
-                        padding: "6px 8px",
+                        padding: "4px 8px",
                         background: "#dcfce7",
                         color: "#166534",
                         border: "1px solid #bbf7d0",
