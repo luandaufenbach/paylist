@@ -140,7 +140,7 @@ export default function Page() {
                     </div>
 
                     {/* Divisor */}
-                 {/*    <div style={{ height: '1px', background: '#e5e7eb', margin: '32px 0' }}></div> */}
+                    {/*    <div style={{ height: '1px', background: '#e5e7eb', margin: '32px 0' }}></div> */}
 
                     {/* Lista de Eventos */}
                     <div>
@@ -182,14 +182,14 @@ export default function Page() {
                                             <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#111', margin: '0 0 8px 0' }}>{event.title}</h3>
                                             {event.location && <p style={{ fontSize: '12px', color: '#6b7280', margin: '0 0 4px 0' }}>{event.location}</p>}
                                             {event.date && (
-                                              <p style={{ fontSize: '12px', color: '#6b7280', margin: '0' }}>
-                                                 {event.date.split('-').reverse().join('/')}
-                                              </p>
+                                                <p style={{ fontSize: '12px', color: '#6b7280', margin: '0' }}>
+                                                    {event.date.split('-').reverse().join('/')}
+                                                </p>
                                             )}
                                         </Link>
 
                                         {/* Botões */}
-                                        <div style={{ display: 'flex', gap: '8px', marginLeft: '16px' }}>
+                                        <div style={{ display: 'flex', gap: '8px', marginLeft: '16px', flexShrink: 0 }}>
                                             <button
                                                 onClick={(e) => handleCopyEventId(event.id, e)}
                                                 title="Copiar ID do evento"
@@ -197,55 +197,64 @@ export default function Page() {
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
-                                                    padding: '10px 16px',
+                                                    width: '40px',
+                                                    height: '36px',
+                                                    flexShrink: 0,
                                                     background: copiedEventId === event.id ? '#d1fae5' : '#f3f4f6',
                                                     border: '1px solid ' + (copiedEventId === event.id ? '#6ee7b7' : '#e5e7eb'),
                                                     borderRadius: '6px',
-                                                    fontSize: '12px',
-                                                    fontWeight: 500,
+                                                    fontSize: '14px',
                                                     color: copiedEventId === event.id ? '#065f46' : '#111',
                                                     cursor: 'pointer',
-                                                    transition: 'all 0.2s'
+                                                    transition: 'background 0.2s, border-color 0.2s',
                                                 }}
                                                 onMouseOver={(e) => {
                                                     if (copiedEventId !== event.id) {
-                                                        e.target.style.background = '#e5e7eb'
+                                                        e.currentTarget.style.background = '#e5e7eb'
                                                     }
                                                 }}
                                                 onMouseOut={(e) => {
                                                     if (copiedEventId !== event.id) {
-                                                        e.target.style.background = '#f3f4f6'
+                                                        e.currentTarget.style.background = '#f3f4f6'
                                                     }
                                                 }}
                                             >
-                                                <MdContentCopy size={16} style={{ marginRight: copiedEventId === event.id ? '4px' : '0' }} />
-                                                {copiedEventId === event.id && <span>Copiado!</span>}
+                                                {copiedEventId === event.id ? '✓' : <MdContentCopy size={16} />}
                                             </button>
 
-                                            <Link
-                                                href={`/evento/${event.id}/editar`}
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    router.push(`/evento/${event.id}/editar`)
+                                                }}
                                                 style={{
-                                                    padding: '10px 16px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    padding: '8px 12px',
                                                     background: '#f3f4f6',
                                                     border: '1px solid #e5e7eb',
                                                     borderRadius: '6px',
                                                     fontSize: '12px',
                                                     fontWeight: 500,
                                                     color: '#111',
-                                                    textDecoration: 'none',
                                                     cursor: 'pointer',
-                                                    transition: 'background 0.2s'
+                                                    transition: 'background 0.2s',
+                                                    minWidth: '50px',
                                                 }}
                                                 onMouseOver={(e) => e.target.style.background = '#e5e7eb'}
                                                 onMouseOut={(e) => e.target.style.background = '#f3f4f6'}
                                             >
                                                 Editar
-                                            </Link>
+                                            </button>
 
                                             <button
                                                 onClick={(e) => handleDelete(event.id, e)}
                                                 style={{
-                                                    padding: '10px 16px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    padding: '8px 12px',
                                                     background: '#fee2e2',
                                                     border: '1px solid #fecaca',
                                                     borderRadius: '6px',
@@ -279,7 +288,18 @@ export default function Page() {
                         padding: 24px 16px !important;
                     }
                     div[style*="gap"] {
-                        gap: 12px !important;
+                        gap: 6px !important;
+                    }
+                    div[style*="marginLeft"] {
+                        margin-left: 4px !important;
+                    }
+                    button[style*="minWidth"] {
+                        min-width: 40px !important;
+                        width: 40px !important;
+                        padding: 8px !important;
+                    }
+                    button span {
+                        display: none !important;
                     }
                 }
             `}</style>

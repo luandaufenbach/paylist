@@ -250,7 +250,7 @@ export default function EventPage({ params: paramsPromise }) {
                     alignItems: "center",
                     justifyContent: "center",
                     gap: "6px",
-                    padding: "8px 12px",
+                    padding: "6px 10px",
                     background: pixKeyCopied ? "#d1fae5" : "#0066ff",
                     color: pixKeyCopied ? "#065f46" : "#fff",
                     border: pixKeyCopied ? "1px solid #6ee7b7" : "none",
@@ -260,6 +260,7 @@ export default function EventPage({ params: paramsPromise }) {
                     cursor: "pointer",
                     whiteSpace: "nowrap",
                     transition: "all 200ms ease",
+                    minWidth: "80px",
                   }}
                   onMouseOver={(e) => {
                     if (!pixKeyCopied) {

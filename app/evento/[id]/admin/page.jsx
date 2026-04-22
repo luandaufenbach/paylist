@@ -76,9 +76,13 @@ export default function EventAdminPage({ params: paramsPromise }) {
     //gerenciar pagamentos e deletar participantes
     const togglePayment = async (playerId, currentPaidStatus) => {
         try {
+            const token = localStorage.getItem('auth_token');
             const response = await fetch('/api/payments', {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({
                     player_id: playerId,
                     paid: !currentPaidStatus
@@ -114,8 +118,12 @@ export default function EventAdminPage({ params: paramsPromise }) {
         }
 
         try {
+            const token = localStorage.getItem('auth_token');
             const response = await fetch(`/api/players/${playerId}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
 
             const data = await response.json();

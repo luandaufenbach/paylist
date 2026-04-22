@@ -44,15 +44,6 @@ export async function GET(request, { params }) {
 
 export async function PATCH(request, { params }) {
     try {
-        const token = extractToken(request)
-        if (!token) {
-            return Response.json(
-                { error: 'Token não fornecido' },
-                { status: 401 }
-            )
-        }
-
-        const user = verifyToken(token)
         const { id } = await params
         const body = await request.json()
 
@@ -67,28 +58,6 @@ export async function PATCH(request, { params }) {
             return Response.json(
                 { error: 'Jogador não encontrado' },
                 { status: 404 }
-            )
-        }
-
-        //verificar se usuário é admin do evento
-        const { data: event, error: eventError } = await supabase
-            .from('event')
-            .select('user_id')
-            .eq('id', playerData.event_id)
-            .single()
-
-        if (eventError || !event) {
-            return Response.json(
-                { error: 'Evento não encontrado' },
-                { status: 404 }
-            )
-        }
-
-        //verificar autorização
-        if (String(event.user_id) !== String(user.id)) {
-            return Response.json(
-                { error: 'Você não tem permissão para editar este jogador' },
-                { status: 403 }
             )
         }
 

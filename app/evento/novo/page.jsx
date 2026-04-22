@@ -350,7 +350,7 @@ export default function NovoEvento() {
                 <label
                   style={{ fontSize: "12px", fontWeight: 600, color: "#111" }}
                 >
-                  Nome de quien recebe *
+                  Nome de quem recebe *
                 </label>
                 <input
                   type="text"
@@ -434,6 +434,10 @@ export default function NovoEvento() {
           }
           main {
             padding: 24px 16px !important;
+          }
+          input[type="date"],
+          input[type="time"] {
+            max-width: 100% !important;
           }
         }
       `}</style>

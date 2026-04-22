@@ -46,14 +46,11 @@ export default function PlayerList({
   }, [eventId]);
 
   useEffect(() => {
-    // Ler myPlayerId do localStorage
     const myId = localStorage.getItem(`myPlayer_${eventId}`);
     setMyPlayerId(myId);
 
-    // Buscar jogadores
     fetchPlayers();
 
-    // Listener para playerAdded (atualizar myPlayerId quando user entra na lista)
     const handlePlayerAdded = (e) => {
       if (e.detail.eventId === eventId) {
         const newMyId = localStorage.getItem(`myPlayer_${eventId}`);
@@ -61,7 +58,6 @@ export default function PlayerList({
       }
     };
 
-    // Listener para playerDeleted (remover imediatamente da lista)
     const handlePlayerDeleted = (e) => {
       if (e.detail.eventId === eventId) {
         setPlayers((prevPlayers) =>
@@ -73,7 +69,6 @@ export default function PlayerList({
     window.addEventListener('playerAdded', handlePlayerAdded);
     window.addEventListener('playerDeleted', handlePlayerDeleted);
 
-    //configurar Realtime subscription
     const subscription = supabase
       .channel(`players-${eventId}`)
       .on(
@@ -227,14 +222,14 @@ export default function PlayerList({
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {players.map((player, index) => (
-            <div key={player.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px", border: "1px solid #e5e7eb", borderRadius: "8px", transition: "background-color 0.2s" }}>
+            <div key={player.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", padding: "12px", border: "1px solid #e5e7eb", borderRadius: "8px", transition: "background-color 0.2s" }}>
               {/* Info do Jogador */}
-              <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1 }}>
-                <span style={{ fontSize: "12px", fontWeight: 500, color: "#6b7280", width: "24px" }}>{index + 1}</span>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1, minWidth: 0 }}>
+                <span style={{ fontSize: "12px", fontWeight: 500, color: "#6b7280", flexShrink: 0 }}>{index + 1}</span>
 
                 {/* Modo Edição: Input + Botões */}
                 {editingPlayerId === player.id ? (
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1, minWidth: 0 }}>
                     <input
                       type="text"
                       value={editingName}
@@ -242,10 +237,11 @@ export default function PlayerList({
                       disabled={isSaving}
                       style={{
                         flex: 1,
+                        minWidth: 0,
                         padding: "6px 8px",
                         border: "1px solid #0066ff",
                         borderRadius: "4px",
-                        fontSize: "14px",
+                        fontSize: "12px",
                         outline: "none",
                         boxSizing: "border-box",
                       }}
@@ -254,16 +250,16 @@ export default function PlayerList({
                       onClick={() => handleSaveName(player.id)}
                       disabled={isSaving}
                       style={{
-                        padding: "6px 10px",
+                        padding: "6px 8px",
                         background: "#dcfce7",
                         color: "#166534",
                         border: "1px solid #bbf7d0",
                         borderRadius: "4px",
-                        fontSize: "12px",
-
+                        fontSize: "11px",
                         fontWeight: 500,
                         cursor: isSaving ? "not-allowed" : "pointer",
                         opacity: isSaving ? 0.7 : 1,
+                        flexShrink: 0,
                       }}
                     >
                       ✓
@@ -272,47 +268,52 @@ export default function PlayerList({
                       onClick={handleCancelEdit}
                       disabled={isSaving}
                       style={{
-                        padding: "6px 10px",
+                        padding: "4px 8px",
                         background: "#fee2e2",
                         color: "#991b1b",
                         border: "1px solid #fecaca",
                         borderRadius: "4px",
-                        fontSize: "12px",
+                        fontSize: "11px",
                         fontWeight: 500,
-                        marginRight: "10px",
                         cursor: isSaving ? "not-allowed" : "pointer",
                         opacity: isSaving ? 0.7 : 1,
+                        flexShrink: 0,
                       }}
                     >
                       ✕
                     </button>
                   </div>
                 ) : (
-                  <span style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>{player.name}</span>
+                  <span style={{ fontSize: "14px", fontWeight: 500, color: "#111", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{player.name}</span>
                 )}
               </div>
 
               {/* Modo Admin: Botões */}
               {isAdmin ? (
-                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}>
                   {/* Status de Pagamento - Clicável */}
                   <button
                     onClick={() => onManagePayment(player.id, player.paid)}
                     style={{
-                      padding: "6px 10px",
+                      display: "flex",      
+                      alignItems: "center",      
+                      justifyContent: "center",
+                      padding: "4px 8px",
                       background: player.paid ? "#dcfce7" : "#f3f4f6",
                       color: player.paid ? "#166534" : "#6b7280",
                       border: "1px solid " + (player.paid ? "#bbf7d0" : "#e5e7eb"),
                       borderRadius: "6px",
-                      fontSize: "12px",
+                      fontSize: "11px",
                       fontWeight: 500,
                       cursor: "pointer",
-                      transition: "background 0.2s"
+                      transition: "background 0.2s",
+                      whiteSpace: "nowrap",
+                      flexShrink: 0,
                     }}
                     onMouseOver={(e) => e.target.style.background = player.paid ? "#bbf7d0" : "#e5e7eb"}
                     onMouseOut={(e) => e.target.style.background = player.paid ? "#dcfce7" : "#f3f4f6"}
                   >
-                    {player.paid ? "✓ Pago" : "○ Pendente"}
+                    {player.paid ? "✓ Pago" : "Pendente"}
                   </button>
 
                   {/* Botão Ver Comprovante */}
@@ -322,7 +323,7 @@ export default function PlayerList({
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      padding: "6px 10px",
+                      padding: "6px 8px",
                       background: "#dbeafe",
                       color: "#1e40af",
                       border: "1px solid #93c5fd",
@@ -330,7 +331,8 @@ export default function PlayerList({
                       fontSize: "12px",
                       fontWeight: 500,
                       cursor: "pointer",
-                      transition: "all 200ms ease"
+                      transition: "all 200ms ease",
+                      flexShrink: 0,
                     }}
                     onMouseOver={(e) => {
                       e.currentTarget.style.background = "#93c5fd"
@@ -351,7 +353,7 @@ export default function PlayerList({
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      padding: "6px 10px",
+                      padding: "6px 8px",
                       background: "#fee2e2",
                       color: "#991b1b",
                       border: "1px solid #fecaca",
@@ -359,7 +361,8 @@ export default function PlayerList({
                       fontSize: "12px",
                       fontWeight: 500,
                       cursor: "pointer",
-                      transition: "all 200ms ease"
+                      transition: "all 200ms ease",
+                      flexShrink: 0,
                     }}
                     onMouseOver={(e) => {
                       e.currentTarget.style.background = "#fecaca"
@@ -375,9 +378,9 @@ export default function PlayerList({
                 </div>
               ) : (
                 /* Modo Normal: Status + Botão Editar (só para myPlayerId) */
-                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                  <PaymentIcon paid={player.paid} />
-                  {myPlayerId === player.id && !editingPlayerId && (
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+                  {editingPlayerId !== player.id && <PaymentIcon paid={player.paid} />}
+                  {myPlayerId === player.id && !editingPlayerId && !player.paid && (
                     <button
                       onClick={() => handleEditClick(player)}
                       style={{
@@ -389,7 +392,9 @@ export default function PlayerList({
                         fontSize: "12px",
                         fontWeight: 500,
                         cursor: "pointer",
-                        transition: "background 0.2s"
+                        transition: "background 0.2s",
+                        flexShrink: 0,
+                        textAlign: "center"
                       }}
                       onMouseOver={(e) => e.target.style.background = "#e5e7eb"}
                       onMouseOut={(e) => e.target.style.background = "#f3f4f6"}

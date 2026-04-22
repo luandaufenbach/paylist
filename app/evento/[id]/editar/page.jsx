@@ -173,10 +173,26 @@ export default function EditarEvento() {
             <Link
               href="/dashboard"
               style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "12px",
+                padding: "8px 12px",
                 color: "#0066ff",
                 textDecoration: "none",
                 fontWeight: 600,
                 fontSize: "14px",
+                borderRadius: "8px",
+                transition: "all 200ms ease",
+                backgroundColor: "rgba(0, 102, 255, 0.05)",
+                cursor: "pointer"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(0, 102, 255, 0.1)"
+                e.currentTarget.style.transform = "translateX(-4px)"
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "rgba(0, 102, 255, 0.05)"
+                e.currentTarget.style.transform = "translateX(0)"
               }}
             >
               ← Voltar
